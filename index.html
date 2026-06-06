@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusHub AI - 3D AI Business Operating Portal</title>
+  <meta name="description" content="Immersive 3D portfolio dashboard for managing business tasks with intelligent AI agents, workflows, chat, analytics, and integrations.">
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Identity Services client script -->
+  <script src="https://accounts.google.com/gsi/client" onload="if (window.initGoogleAuth) window.initGoogleAuth()" async defer></script>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css?v=6.0">
+  <style>
+    /* Critical Inline CSS to hide non-active stages instantly, preventing overlaps on load */
+    .stage {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      display: flex !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
+      box-sizing: border-box !important;
+    }
+    body.state-landing #stage-landing {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 10 !important;
+    }
+    body.state-auth #stage-auth {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 10 !important;
+    }
+    body.state-dashboard #stage-dashboard {
+      display: grid !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 10 !important;
+    }
+    /* Hide dashboard panels by default to prevent overlapping list outputs */
+    .dashboard-panel {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
+    }
+    .dashboard-panel.active {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 2 !important;
+    }
+  </style>
+  <!-- ChartJS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="state-landing">
+
+  <!-- STAGE 1: LANDING SCREEN -->
+  <section class="stage" id="stage-landing">
+    <canvas id="landing-canvas-3d" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:-1; pointer-events: none; opacity: 0.55;"></canvas>
+    
+    <!-- Central Glowing 3D Parallax Card -->
+    <div class="landing-container" id="landing-trigger-area" style="cursor: pointer; padding: 50px 40px; border-radius: 24px; text-align: center; max-width: 500px; width: 90%; background: rgba(18, 18, 24, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: transform 0.1s ease-out, box-shadow 0.3s; transform-style: preserve-3d; perspective: 1000px; margin: auto;">
+      <div class="landing-logo-glow" style="transform: translateZ(50px);">NexusHub AI</div>
+      <p class="landing-tagline" style="transform: translateZ(30px); font-size: 1.05rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 30px;">Start your automated business space with AI Agents & Workflows</p>
+      <button class="btn-start-pulse" id="btn-start-app" style="transform: translateZ(40px); display: inline-flex; align-items: center; gap: 10px; margin: 0 auto;">Start NexusHub AI <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- STAGE 2: SIGN-IN SCREEN -->
+  <section class="stage" id="stage-auth">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <i class="fa-solid fa-circle-nodes"></i>
+        <span>NexusHub AI</span>
+      </div>
+      <p class="auth-subhead">Secure Workspace Access Center</p>
+      
+      <!-- Google Sign In Button Container -->
+      <div class="google-signin-btn-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 46px;">
+        <div id="btn-google-login-container" style="display: none; justify-content: center; width: 100%;"></div>
+        <button class="custom-google-btn" id="btn-google-login">
+          <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+          </svg>
+          <span>Sign in with Google</span>
+        </button>
+      </div>
+
+      <p class="auth-card-footer">
+        The workspace is entirely free. Log in to establish your profile.
+      </p>
+
+      <a href="#" class="auth-back-link" id="auth-back-landing" style="margin-top: 24px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to start
+      </a>
+    </div>
+  </section>
+
+  <!-- STAGE 3: PORTAL WITH VERTICAL 3D DOCK NAV -->
+  <section class="stage" id="stage-dashboard">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="dash-header-logo">
+        <button class="mobile-menu-toggle" id="btn-mobile-menu-toggle" title="Toggle Navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <i class="fa-solid fa-circle-nodes"></i>
+        <span>NexusHub AI</span>
+      </div>
+
+      <!-- Universal RAG Search Input -->
+      <div class="header-search-container" style="display: flex; align-items: center; gap: 8px; flex-grow: 0.4; max-width: 400px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 9999px; padding: 4px 14px;">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+        <input type="text" id="header-rag-search" placeholder="Ask Knowledge Base..." style="background: none; border: none; color: #fff; font-size: 0.78rem; width: 100%; outline: none;">
+        <button id="btn-header-search-submit" style="background: none; border: none; color: var(--color-primary); cursor: pointer; font-size: 0.8rem;" title="Search Documents"><i class="fa-solid fa-circle-arrow-right"></i></button>
+      </div>
+
+      <!-- Notifications Bell -->
+      <div class="header-notification-center" style="position: relative; margin-left: auto;">
+        <button id="btn-notification-bell" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1rem; position: relative;" title="System Notifications">
+          <i class="fa-solid fa-bell"></i>
+          <span id="notification-badge" style="display: none; position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; font-size: 0.58rem; font-weight: bold; border-radius: 50%; min-width: 14px; height: 14px; align-items: center; justify-content: center; line-height: 1;">0</span>
+        </button>
+        <div id="notification-dropdown" style="display: none; position: absolute; top: 32px; right: -40px; width: 280px; background: rgba(18, 18, 24, 0.95); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; backdrop-filter: blur(8px); padding: 12px; flex-direction: column; gap: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">
+            <strong style="color: #fff; font-size: 0.75rem;"><i class="fa-solid fa-bell" style="color: var(--color-secondary); margin-right: 4px;"></i> Notifications</strong>
+            <button id="btn-clear-notifications" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.62rem;" onclick="event.stopPropagation();">Clear all</button>
+          </div>
+          <div id="notification-list" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; padding-right: 4px;">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.68rem; padding: 20px 0;">
+              No new alerts
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="user-profile-badge" id="profile-badge-area" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+        <div class="avatar-container" id="header-avatar-container" style="position: relative; width: 28px; height: 28px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--color-primary); border: 2px solid var(--color-primary);">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" class="user-avatar" id="header-user-avatar" style="width: 100%; height: 100%; object-fit: cover; display: block;" alt="Avatar">
+          <span id="header-user-initials" style="display: none; font-size: 0.72rem; font-weight: 700; color: #fff;">G</span>
+        </div>
+        <span class="user-name" id="header-user-name">Guest User</span>
+      </div>
+    </header>
+
+    <!-- Body Shell Container -->
+    <div class="dashboard-body-container">
+      
+      <!-- 3D Sidebar Dock -->
+      <aside class="sidebar-dock">
+        <ul class="dock-menu-list">
+          <li>
+            <button class="dock-item-btn active" data-tab="command-center">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>Command Center</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="ai-suite">
+              <i class="fa-solid fa-cubes"></i>
+              <span>All-in-One Suite</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="agent-marketplace">
+              <i class="fa-solid fa-users-gear"></i>
+              <span>Agent Marketplace</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="workflow-builder">
+              <i class="fa-solid fa-sitemap"></i>
+              <span>Workflow Builder</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="chat-assistant">
+              <i class="fa-solid fa-comments"></i>
+              <span>Chat Assistant</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="analytics">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Analytics & Insights</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="integrations">
+              <i class="fa-solid fa-plug"></i>
+              <span>Integrations</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="knowledge-base">
+              <i class="fa-solid fa-database"></i>
+              <span>Knowledge Base</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="advanced-features">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Advanced Features</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="web-builder">
+              <i class="fa-solid fa-globe"></i>
+              <span>Website Builder</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="proposal-generator">
+              <i class="fa-solid fa-file-signature"></i>
+              <span>Proposal Generator</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="resume-analyzer">
+              <i class="fa-solid fa-id-card-clip"></i>
+              <span>Resume Analyzer</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="interview-simulator">
+              <i class="fa-solid fa-user-tie"></i>
+              <span>Interview Simulator</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="open-lab">
+              <i class="fa-solid fa-flask"></i>
+              <span>Open Innovation Lab</span>
+            </button>
+          </li>
+          <li>
+            <button class="dock-item-btn" data-tab="app-store">
+              <i class="fa-solid fa-cubes"></i>
+              <span>AI App Store</span>
+            </button>
+          </li>
+
+          <li>
+            <button class="dock-item-btn" data-tab="settings">
+              <i class="fa-solid fa-gears"></i>
+              <span>Settings</span>
+            </button>
+          </li>
+        </ul>
+        <div class="dock-footer" style="display: flex; flex-direction: column; gap: 8px; align-items: center; width: 100%; box-sizing: border-box; padding: 10px;">
+          <button class="btn-signout" id="btn-portal-signout" title="Sign Out" style="width: 100%; justify-content: center; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.3s; font-family: Outfit, sans-serif;">
+            <i class="fa-solid fa-right-from-bracket"></i> <span>Sign Out</span>
+          </button>
+          <span style="font-size: 0.65rem; color: var(--text-muted);">NexusHub AI v3.0</span>
+        </div>
+      </aside>
+
+      <!-- Viewport housing dashboard panels -->
+      <div class="dashboard-viewport" id="viewport-panels-container">
+        
+        <!-- DASHBOARD 1: AI COMMAND CENTER -->
+        <div class="dashboard-panel active" id="panel-command-center">
+          <canvas id="dashboard-canvas-3d" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none; opacity: 0.15;"></canvas>
+          <div class="panel-header" style="position: relative; z-index: 1;">
+            <div>
+              <h2>AI Command Center</h2>
+              <p>Real-time overview of your business performance</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <button type="button" class="btn-primary" id="btn-trigger-agent-debate" style="padding: 6px 14px; font-size: 0.75rem; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-comments"></i> <span>Agent Debate Audit</span>
+              </button>
+              <select class="card-dropdown" id="command-timeframe">
+                <option value="month">This Month</option>
+                <option value="week">This Week</option>
+                <option value="today">Today</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="command-grid-top">
+            <div class="stat-item" id="stat-revenue">
+              <div class="label">Total Revenue</div>
+              <div class="value">$124,563</div>
+              <div class="stat-change up"><i class="fa-solid fa-caret-up"></i> 12.5%</div>
+            </div>
+            <div class="stat-item" id="stat-customers">
+              <div class="label">Active Customers</div>
+              <div class="value">2,345</div>
+              <div class="stat-change up"><i class="fa-solid fa-caret-up"></i> 8.3%</div>
+            </div>
+            <div class="stat-item" id="stat-leads">
+              <div class="label">New Leads</div>
+              <div class="value">1,234</div>
+              <div class="stat-change up"><i class="fa-solid fa-caret-up"></i> 15.2%</div>
+            </div>
+            <div class="stat-item" id="stat-tasks">
+              <div class="label">Tasks Completed</div>
+              <div class="value">856</div>
+              <div class="stat-change up"><i class="fa-solid fa-caret-up"></i> 9.7%</div>
+            </div>
+            <div class="stat-item" id="stat-interactions">
+              <div class="label">AI Interactions</div>
+              <div class="value">45,231</div>
+              <div class="stat-change up"><i class="fa-solid fa-caret-up"></i> 23.5%</div>
+            </div>
+          </div>
+
+          <div class="command-main-grid">
+            <div class="dashboard-card">
+              <div class="chart-header">
+                <h4>Revenue Overview</h4>
+                <span><i class="fa-solid fa-chart-line"></i> +12.5% vs last month</span>
+              </div>
+              <div class="chart-container-canvas">
+                <canvas id="revenueSplineChart"></canvas>
+              </div>
+            </div>
+            <div class="dashboard-card activity-area" style="padding: 24px;">
+              <div class="activity-split-wrapper" style="display: flex; gap: 20px; height: 100%; width: 100%;">
+                <div class="activity-log-left" style="flex: 1; min-width: 0;">
+                  <h4>Recent Activity Log</h4>
+                  <ul class="activity-list" id="activity-logger" style="margin-top: 12px; list-style: none; padding: 0;">
+                    <li class="activity-item">
+                      <div class="activity-item-left">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>AI Support Agent received a ticket</span>
+                      </div>
+                      <span class="activity-time">2m ago</span>
+                    </li>
+                    <li class="activity-item">
+                      <div class="activity-item-left">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>New lead added by AI Sales Agent</span>
+                      </div>
+                      <span class="activity-time">5m ago</span>
+                    </li>
+                    <li class="activity-item">
+                      <div class="activity-item-left">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Invoice generated by Finance Agent</span>
+                      </div>
+                      <span class="activity-time">15m ago</span>
+                    </li>
+                    <li class="activity-item">
+                      <div class="activity-item-left">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Workflow automation triggered</span>
+                      </div>
+                      <span class="activity-time">30m ago</span>
+                    </li>
+                    <li class="activity-item">
+                      <div class="activity-item-left">
+                        <i class="fa-solid fa-audio-description"></i>
+                        <span>Meeting summary generated</span>
+                      </div>
+                      <span class="activity-time">45m ago</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="activity-progress-right" style="width: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid rgba(255,255,255,0.06); padding-left: 16px;">
+                  <h5 style="color: var(--text-secondary); font-size: 0.72rem; margin-bottom: 8px; text-align: center; font-weight: 600;">Overall Progress</h5>
+                  <div class="circular-progress-container" style="position: relative; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center;">
+                    <svg style="width: 100%; height: 100%; transform: rotate(-90deg);">
+                      <circle cx="45" cy="45" r="36" stroke="rgba(255,255,255,0.05)" stroke-width="6" fill="transparent" />
+                      <circle cx="45" cy="45" r="36" stroke="var(--color-secondary)" stroke-width="6" fill="transparent" stroke-dasharray="226.08" stroke-dashoffset="56.52" style="stroke-linecap: round; filter: drop-shadow(0 0 3px var(--color-secondary));" />
+                    </svg>
+                    <span style="position: absolute; font-size: 1.25rem; font-weight: 700; color: #fff;">75%</span>
+                  </div>
+                  <span style="font-size: 0.62rem; color: var(--text-muted); margin-top: 6px; text-align: center;">Goal Met</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Usage Table -->
+          <div class="dashboard-card" style="margin-top: 24px;">
+            <div class="chart-header" style="margin-bottom: 16px;">
+              <h4>All Usage</h4>
+              <span style="font-size: 0.72rem; color: var(--text-secondary);"><i class="fa-solid fa-list-check"></i> Sub-System Pipelines</span>
+            </div>
+            <div class="table-responsive" style="overflow-x: auto;">
+              <table class="premium-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.78rem;">
+                <thead>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: var(--text-secondary);">
+                    <th style="padding: 10px 14px;">Stage</th>
+                    <th style="padding: 10px 14px;">Agent / Role</th>
+                    <th style="padding: 10px 14px;">Revenue</th>
+                    <th style="padding: 10px 14px;">Tools</th>
+                    <th style="padding: 10px 14px;">Status</th>
+                    <th style="padding: 10px 14px; text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                    <td style="padding: 12px 14px; color: #fff; font-weight: 500;">Finance</td>
+                    <td style="padding: 12px 14px;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-headset" style="color: var(--color-primary);"></i>
+                        <span>Billing Manager</span>
+                      </div>
+                    </td>
+                    <td style="padding: 12px 14px; color: var(--color-success); font-weight: 600;">$12,563</td>
+                    <td style="padding: 12px 14px; color: var(--text-secondary);">Billing & Invoicing</td>
+                    <td style="padding: 12px 14px;">
+                      <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; background: rgba(16,185,129,0.1); color: var(--color-success); border: 1px solid rgba(16,185,129,0.2);">Stable</span>
+                    </td>
+                    <td style="padding: 12px 14px; text-align: right;">
+                      <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.65rem; border-radius: 4px;" onclick="alert('Viewing Finance details: Active in 2 projects.')">View Details</button>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                    <td style="padding: 12px 14px; color: #fff; font-weight: 500;">Marketing</td>
+                    <td style="padding: 12px 14px;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-bullhorn" style="color: var(--color-secondary);"></i>
+                        <span>Ads Manager</span>
+                      </div>
+                    </td>
+                    <td style="padding: 12px 14px; color: var(--color-success); font-weight: 600;">$85,231</td>
+                    <td style="padding: 12px 14px; color: var(--text-secondary);">Campaign Scheduler</td>
+                    <td style="padding: 12px 14px;">
+                      <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; background: rgba(59,130,246,0.1); color: var(--color-primary); border: 1px solid rgba(59,130,246,0.2);">Running</span>
+                    </td>
+                    <td style="padding: 12px 14px; text-align: right;">
+                      <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.65rem; border-radius: 4px;" onclick="alert('Viewing Marketing details: Running 3 ads.')">View Details</button>
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                    <td style="padding: 12px 14px; color: #fff; font-weight: 500;">Sales</td>
+                    <td style="padding: 12px 14px;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-handshake" style="color: var(--color-warning);"></i>
+                        <span>CRM Manager</span>
+                      </div>
+                    </td>
+                    <td style="padding: 12px 14px; color: var(--color-success); font-weight: 600;">$23,456</td>
+                    <td style="padding: 12px 14px; color: var(--text-secondary);">Lead Nurturing</td>
+                    <td style="padding: 12px 14px;">
+                      <span style="padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; background: rgba(59,130,246,0.1); color: var(--color-primary); border: 1px solid rgba(59,130,246,0.2);">Running</span>
+                    </td>
+                    <td style="padding: 12px 14px; text-align: right;">
+                      <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.65rem; border-radius: 4px;" onclick="alert('Viewing Sales details: Syncing Salesforce pipeline.')">View Details</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD 2: ALL-IN-ONE AI SUITE -->
+        <div class="dashboard-panel" id="panel-ai-suite">
+          <!-- SUITE CATALOG VIEW -->
+          <div id="suite-catalog-view">
+            <div class="panel-header">
+              <div>
+                <h2>All-in-One AI Suite</h2>
+                <p>Full suite of automated tools to manage and grow your platform</p>
+              </div>
+            </div>
+            <div class="suite-panel-grid">
+              <!-- Card 1 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-comments"></i></div>
+                <div class="suite-card-large-title">AI Chat Assistant</div>
+                <div class="suite-card-large-desc">Unified chat companion connected to doc indexes for real-time inquiries.</div>
+                <button class="suite-card-large-btn" data-suite="chat">Configure Assistant <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 2 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-sitemap"></i></div>
+                <div class="suite-card-large-title">Workflow Builder</div>
+                <div class="suite-card-large-desc">Design node flowcharts to route profiles and connect task actions visually.</div>
+                <button class="suite-card-large-btn" data-suite="workflow">Open Builder <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 3 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-book-open"></i></div>
+                <div class="suite-card-large-title">Knowledge Base</div>
+                <div class="suite-card-large-desc">Index PDFs and reference texts securely using semantic searches.</div>
+                <button class="suite-card-large-btn" data-suite="kb">Ingest Files <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 4 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="suite-card-large-title">Data Analytics</div>
+                <div class="suite-card-large-desc">Audit conversion trends and compile charts directly from data streams.</div>
+                <button class="suite-card-large-btn" data-suite="analytics">View Insights <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 5 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-globe"></i></div>
+                <div class="suite-card-large-title">Website Builder</div>
+                <div class="suite-card-large-desc">Publish stunning landing pages designed using simple conversational requests.</div>
+                <button class="suite-card-large-btn" data-suite="web">Launch Builder <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 6 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-file-signature"></i></div>
+                <div class="suite-card-large-title">Proposal Generator</div>
+                <div class="suite-card-large-desc">Draft proposals, invoices, and pricing outlines embedded with signature boxes.</div>
+                <button class="suite-card-large-btn" data-suite="proposal">Draft Proposal <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 7 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-id-card-clip"></i></div>
+                <div class="suite-card-large-title">Resume Analyzer</div>
+                <div class="suite-card-large-desc">Extract skill scores and check applicants background fits semantically.</div>
+                <button class="suite-card-large-btn" data-suite="resume">Analyze Resumes <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 8 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-video-slash"></i></div>
+                <div class="suite-card-large-title">Meeting Assistant</div>
+                <div class="suite-card-large-desc">Compile key timelines and task checklists from voice sync summaries.</div>
+                <button class="suite-card-large-btn" data-suite="meeting">Inspect Syncs <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 9 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-hashtag"></i></div>
+                <div class="suite-card-large-title">Social Media Suite</div>
+                <div class="suite-card-large-desc">Schedules viral campaigns and handles tone styles automatically.</div>
+                <button class="suite-card-large-btn" data-suite="social">Generate Posts <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 10 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                <div class="suite-card-large-title">AI Market Research</div>
+                <div class="suite-card-large-desc">Audits competitor products and logs keywords search values.</div>
+                <button class="suite-card-large-btn" data-suite="market">Research Trends <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 11 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-user-tie"></i></div>
+                <div class="suite-card-large-title">Interview Simulator</div>
+                <div class="suite-card-large-desc">Interactive vocal chatbot coaching you through mock question scripts.</div>
+                <button class="suite-card-large-btn" data-suite="interview">Practice Sessions <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <!-- Card 12 -->
+              <div class="suite-card-large">
+                <div class="suite-card-large-icon"><i class="fa-solid fa-flask"></i></div>
+                <div class="suite-card-large-title">Open Innovation Lab</div>
+                <div class="suite-card-large-desc">Fine-tune weights and manage APIs key vaults in sandboxes.</div>
+                <button class="suite-card-large-btn" data-suite="openlab">Open Sandbox <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:center; margin-top:20px; width:100%;">
+              <button type="button" class="btn-secondary" id="btn-explore-all-features" style="padding:8px 20px; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+                Explore All Features <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- SUITE PLAYGROUND VIEW -->
+          <div id="suite-playground-view" style="display: none; flex-direction: column; height: 100%;">
+            <div class="panel-header" style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="btn-secondary" id="btn-back-to-suite" style="padding: 6px 14px; font-size: 0.72rem;">
+                  <i class="fa-solid fa-arrow-left"></i> Back to Suite Catalog
+                </button>
+                <h2 id="playground-title" style="margin: 0;">Tool Playground</h2>
+              </div>
+            </div>
+            <div id="playground-container-body" style="flex-grow: 1; display: flex; flex-direction: column;">
+              <!-- Dynamic forms injected by JS -->
+            </div>
+          </div>
+          <div id="premium-suite-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 3: AI AGENT MARKETPLACE -->
+        <div class="dashboard-panel" id="panel-agent-marketplace">
+          <div class="panel-header">
+            <div>
+              <h2>AI Agent Marketplace</h2>
+              <p>Deploy specialized autonomous agents to handle task roles</p>
+            </div>
+          </div>
+          
+          <div class="marketplace-top-bar">
+            <span>Workspace Status: <strong>Ready to Scale</strong></span>
+            <button class="btn-primary" id="btn-marketplace-create" style="padding: 6px 14px; font-size: 0.75rem;">
+              <i class="fa-solid fa-plus"></i> Create Custom Agent
+            </button>
+          </div>
+
+          <div class="agent-grid-large">
+            <div class="agent-card-large active" id="agent-lg-support">
+              <div class="agent-card-large-top">
+                <div class="agent-card-large-icon"><i class="fa-solid fa-headset"></i></div>
+                <div>
+                  <div class="agent-card-large-title">Support Agent</div>
+                  <div class="agent-card-large-desc">Resolves client emails, organizes tickets, and updates FAQs.</div>
+                </div>
+              </div>
+              <div class="agent-card-large-bottom">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Active</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-agent="Support Agent">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="agent-card-large active" id="agent-lg-sales">
+              <div class="agent-card-large-top">
+                <div class="agent-card-large-icon"><i class="fa-solid fa-handshake"></i></div>
+                <div>
+                  <div class="agent-card-large-title">Sales Agent</div>
+                  <div class="agent-card-large-desc">Identifies client profiles, scores leads, and sends pitches.</div>
+                </div>
+              </div>
+              <div class="agent-card-large-bottom">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Active</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-agent="Sales Agent">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="agent-card-large active" id="agent-lg-marketing">
+              <div class="agent-card-large-top">
+                <div class="agent-card-large-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div>
+                  <div class="agent-card-large-title">Marketing Agent</div>
+                  <div class="agent-card-large-desc">Publishes regular content, researches keywords, and schedules emails.</div>
+                </div>
+              </div>
+              <div class="agent-card-large-bottom">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Active</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-agent="Marketing Agent">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="agent-card-large active" id="agent-lg-finance">
+              <div class="agent-card-large-top">
+                <div class="agent-card-large-icon"><i class="fa-solid fa-coins"></i></div>
+                <div>
+                  <div class="agent-card-large-title">Finance Agent</div>
+                  <div class="agent-card-large-desc">Processes billing metrics, reviews invoices, and flags tax margins.</div>
+                </div>
+              </div>
+              <div class="agent-card-large-bottom">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Active</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-agent="Finance Agent">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="agent-card-large active" id="agent-lg-hr">
+              <div class="agent-card-large-top">
+                <div class="agent-card-large-icon"><i class="fa-solid fa-user-group"></i></div>
+                <div>
+                  <div class="agent-card-large-title">HR Agent</div>
+                  <div class="agent-card-large-desc">Filters applications, scores resumes, and alerts applicants.</div>
+                </div>
+              </div>
+              <div class="agent-card-large-bottom">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Active</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-agent="HR Agent">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="agent-card-large active" id="agent-lg-analytics">
+              <div class="agent-card-large-top">
+                <div class="agent-card-large-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <div>
+                  <div class="agent-card-large-title">Analytics Agent</div>
+                  <div class="agent-card-large-desc">Audits logs, processes conversions, and forecasts revenue.</div>
+                </div>
+              </div>
+              <div class="agent-card-large-bottom">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Active</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" checked data-agent="Analytics Agent">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Custom Creator Card -->
+            <div class="agent-card-large" id="agent-card-creator" style="border: 1px dashed var(--color-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; min-height: 200px;">
+              <div id="trigger-agent-creation-form" style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 20px 0;">
+                <i class="fa-solid fa-user-plus" style="font-size: 2.2rem; color: var(--color-primary);"></i>
+                <div class="agent-card-large-title">Create Custom AI Agent</div>
+                <div class="agent-card-large-desc" style="margin-top: 2px; font-size: 0.7rem;">Script and deploy your own autonomous assistant node.</div>
+              </div>
+            </div>
+          </div>
+          <div id="premium-agent-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 4: AI WORKFLOW BUILDER -->
+        <div class="dashboard-panel" id="panel-workflow-builder">
+          <div class="panel-header">
+            <div>
+              <h2 id="workflow-panel-title">Lead Generation Workflow</h2>
+              <p>Design, build, and publish automated client pipelines</p>
+            </div>
+            <div class="workflow-header-actions" style="display: flex; gap: 10px; align-items: center;">
+              <button class="workflow-action-btn" id="btn-workflow-reset" title="Reset Grid">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+              <button class="workflow-action-btn" id="btn-workflow-zoom-in" title="Zoom In">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+              </button>
+              <button class="btn-secondary" style="padding: 6px 14px; font-size: 0.75rem;">
+                Save
+              </button>
+              <button class="btn-primary" id="btn-save-workflow" style="padding: 6px 14px; font-size: 0.75rem;">
+                Publish
+              </button>
+            </div>
+          </div>
+
+          <div class="workflow-workspace-wrapper" style="display: flex; flex-direction: row; height: 100%;">
+            <!-- Canvas -->
+            <div class="workflow-canvas-large" id="workflow-board" style="flex-grow: 1; position: relative;">
+              <svg class="workflow-connections" id="workflow-lines-svg"></svg>
+            </div>
+
+            <!-- Actions Sidebar (Palette) -->
+            <div class="workflow-palette" style="width: 200px; display: flex; flex-direction: column; gap: 10px; padding: 16px; background: rgba(8, 12, 22, 0.4); border-left: 1px solid var(--border-color); border-right: none; height: 100%; overflow-y: auto;">
+              <h4 style="color: #fff; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px;">Actions</h4>
+              <div class="palette-item" data-type="action" data-tooltip="Send Email" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-envelope" style="color: var(--color-primary);"></i>
+                <span>Send Email</span>
+              </div>
+              <div class="palette-item" data-type="integration" data-tooltip="Add to CRM" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-database" style="color: var(--color-secondary);"></i>
+                <span>Add to CRM</span>
+              </div>
+              <div class="palette-item" data-type="action" data-tooltip="Update Contact" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-user-pen" style="color: var(--color-warning);"></i>
+                <span>Update Contact</span>
+              </div>
+              <div class="palette-item" data-type="integration" data-tooltip="Notify Team" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-bullhorn" style="color: var(--color-success);"></i>
+                <span>Notify Team</span>
+              </div>
+              <div class="palette-item" data-type="delay" data-tooltip="Delay" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-clock" style="color: #60a5fa;"></i>
+                <span>Delay</span>
+              </div>
+              <div class="palette-item" data-type="condition" data-tooltip="Condition" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-code-branch" style="color: #c084fc;"></i>
+                <span>Condition</span>
+              </div>
+              <div class="palette-item" data-type="aiaction" data-tooltip="Webhook" draggable="true" style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 12px; font-size: 0.75rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 6px; cursor: grab;">
+                <i class="fa-solid fa-link" style="color: var(--color-danger);"></i>
+                <span>Webhook</span>
+              </div>
+            </div>
+          </div>
+          <div id="premium-workflow-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 5: AI CHAT ASSISTANT -->
+        <div class="dashboard-panel" id="panel-chat-assistant">
+          <div class="panel-header">
+            <div>
+              <h2>AI Chat Assistant</h2>
+              <p>Your workspace companion linked to vector documentation databases</p>
+            </div>
+          </div>
+
+          <div class="chat-workspace-large">
+            <div class="chat-left-large">
+              <div class="chat-pane-large" id="chat-messages-container">
+                <div class="chat-msg bot">
+                  Welcome to your unified chat space. How can I help you coordinate operations?
+                </div>
+              </div>
+              <div class="chat-suggestions" id="chat-suggestions-area" style="padding: 0 20px;">
+                <span class="suggestion-pill" data-query="Show me the top performing products this month.">
+                  Show top performing products
+                </span>
+                <span class="suggestion-pill" data-query="Draft a marketing proposal draft.">
+                  Draft proposal
+                </span>
+                <span class="suggestion-pill" data-query="Show me active agents status.">
+                  Show active agents status
+                </span>
+              </div>
+              <div class="chat-input-wrapper">
+                <span id="chat-selected-file-badge" style="display: none; background: var(--color-primary); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; align-items: center; gap: 4px; margin-left: 10px; margin-right: -4px;"><i class="fa-solid fa-file"></i> <span id="chat-selected-file-name"></span> <i class="fa-solid fa-xmark" id="chat-selected-file-remove" style="cursor: pointer;"></i></span>
+                <input type="file" id="chat-file-input" style="display: none;">
+                <button class="chat-input-btn" id="chat-attachment-btn" title="Add File Context"><i class="fa-solid fa-paperclip"></i></button>
+                <input type="text" id="chat-user-input" placeholder="Type your message here...">
+                <button class="chat-input-btn" id="chat-voice-btn" title="Voice Input"><i class="fa-solid fa-microphone"></i></button>
+                <button class="chat-input-btn send" id="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+              </div>
+            </div>
+            
+            <div class="chat-sidebar-large">
+              <div class="cap-badge" id="cap-voice">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <div class="cap-title">Voice Input</div>
+                <div class="cap-desc">Voice commands</div>
+              </div>
+              <div class="cap-badge" id="cap-upload">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <div class="cap-title">File Upload</div>
+                <div class="cap-desc">Attach context docs</div>
+              </div>
+              <div class="cap-badge" id="cap-search">
+                <i class="fa-solid fa-globe"></i>
+                <div class="cap-title">Web Search</div>
+                <div class="cap-desc">Real-time answers</div>
+              </div>
+              <div class="cap-badge" id="cap-lang">
+                <i class="fa-solid fa-language"></i>
+                <div class="cap-title">Multi-language</div>
+                <div class="cap-desc">100+ translation scopes</div>
+              </div>
+            </div>
+          </div>
+          <div id="premium-chat-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 6: AI ANALYTICS & INSIGHTS -->
+        <div class="dashboard-panel" id="panel-analytics">
+          <div class="panel-header">
+            <div>
+              <h2>AI Analytics & Insights</h2>
+              <p>Inspect business conversion rates,sentiment, and timelines</p>
+            </div>
+          </div>
+          
+          <div class="analytics-grid-large">
+            <!-- Card 1: Sales Performance -->
+            <div class="analytics-card-large">
+              <div class="analytics-card-large-header">
+                <div>
+                  <span class="widget-title" style="font-size:0.8rem; color:var(--text-secondary);">Sales Performance</span>
+                  <div class="widget-val" style="font-size:1.6rem; font-weight:700; margin-top:4px;">$45,231</div>
+                </div>
+                <span class="widget-change" style="color:var(--color-success); font-size:0.75rem;"><i class="fa-solid fa-caret-up"></i> +23.5%</span>
+              </div>
+              <div class="analytics-card-large-canvas">
+                <canvas id="salesPerfMiniChart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Card 2: Customer Sentiment -->
+            <div class="analytics-card-large">
+              <div class="analytics-card-large-header">
+                <span class="widget-title" style="font-size:0.8rem; color:var(--text-secondary);">Sentiment Distribution</span>
+              </div>
+              <div class="donut-container" style="flex-grow:1;">
+                <div style="width: 120px; height: 120px; position: relative;">
+                  <canvas id="sentimentMiniChart"></canvas>
+                </div>
+                <div class="donut-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background-color: var(--color-success);"></span>
+                    <span>Positive: 70%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background-color: var(--text-muted);"></span>
+                    <span>Neutral: 20%</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background-color: var(--color-danger);"></span>
+                    <span>Negative: 10%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Lead Conversion -->
+            <div class="analytics-card-large">
+              <div class="analytics-card-large-header">
+                <div>
+                  <span class="widget-title" style="font-size:0.8rem; color:var(--text-secondary);">Lead Conversion Rate</span>
+                  <div class="widget-val" style="font-size:1.6rem; font-weight:700; margin-top:4px;">18.4%</div>
+                </div>
+                <span class="widget-change" style="color:var(--color-success); font-size:0.75rem;"><i class="fa-solid fa-caret-up"></i> +12.5%</span>
+              </div>
+              <div class="analytics-card-large-canvas">
+                <canvas id="leadConvMiniChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Card 4: Support Uptime -->
+            <div class="analytics-card-large">
+              <div class="analytics-card-large-header">
+                <div>
+                  <span class="widget-title" style="font-size:0.8rem; color:var(--text-secondary);">Support Resolution Uptime</span>
+                  <div class="widget-val" style="font-size:1.6rem; font-weight:700; margin-top:4px;">99.1%</div>
+                </div>
+                <span class="widget-change" style="color:var(--color-secondary); font-size:0.75rem;"><i class="fa-solid fa-caret-up"></i> 98.6%</span>
+              </div>
+              <div class="analytics-card-large-canvas">
+                <canvas id="supportResMiniChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Card 5: Traffic Source -->
+            <div class="analytics-card-large" style="grid-column: span 2; min-height: 240px;">
+              <div class="analytics-card-large-header">
+                <span class="widget-title" style="font-size:0.8rem; color:var(--text-secondary);">Traffic Source Distribution</span>
+              </div>
+              <div class="analytics-card-large-canvas" style="height: 150px; margin-top: 10px;">
+                <canvas id="trafficSourceMiniChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div id="premium-analytics-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 7: 100+ SEAMLESS INTEGRATIONS -->
+        <div class="dashboard-panel" id="panel-integrations">
+          <div class="panel-header">
+            <div>
+              <h2>100+ Seamless Integrations</h2>
+              <p>Synchronize your databases and chats with external systems</p>
+            </div>
+          </div>
+          
+          <div class="integrations-filters">
+            <button class="filter-pill-btn active" data-filter="all">All Tools</button>
+            <button class="filter-pill-btn" data-filter="comm">Communication</button>
+            <button class="filter-pill-btn" data-filter="marketing">Marketing & CRM</button>
+            <button class="filter-pill-btn" data-filter="database">Storage & Files</button>
+            <button class="filter-pill-btn" data-filter="financial">Payment Systems</button>
+          </div>
+
+          <div class="integrations-grid-large" id="integrations-container-large">
+            <div class="integration-card-large" data-cat="comm" title="Google Gmail">
+              <i class="fa-solid fa-envelope" style="color: #ea4335;"></i>
+              <div class="integration-card-large-title">Gmail</div>
+              <div class="integration-card-large-desc">Auto draft and send notification letters.</div>
+            </div>
+            <div class="integration-card-large" data-cat="comm" title="Microsoft Outlook">
+              <i class="fa-solid fa-square-envelope" style="color: #0078d4;"></i>
+              <div class="integration-card-large-title">Outlook</div>
+              <div class="integration-card-large-desc">Coordinate appointments and dispatch letters.</div>
+            </div>
+            <div class="integration-card-large" data-cat="comm" title="Slack">
+              <i class="fa-brands fa-slack" style="color: #4a154b;"></i>
+              <div class="integration-card-large-title">Slack</div>
+              <div class="integration-card-large-desc">Post real-time reports to developer threads.</div>
+            </div>
+            <div class="integration-card-large" data-cat="comm" title="WhatsApp">
+              <i class="fa-brands fa-whatsapp" style="color: #25d366;"></i>
+              <div class="integration-card-large-title">WhatsApp</div>
+              <div class="integration-card-large-desc">Direct text alerts to verified client phone lists.</div>
+            </div>
+            <div class="integration-card-large" data-cat="comm" title="Zoom">
+              <i class="fa-solid fa-video" style="color: #2d8cff;"></i>
+              <div class="integration-card-large-title">Zoom</div>
+              <div class="integration-card-large-desc">Auto schedule channels and fetch transcripts.</div>
+            </div>
+            <div class="integration-card-large" data-cat="database" title="Google Drive">
+              <i class="fa-brands fa-google-drive" style="color: #34a853;"></i>
+              <div class="integration-card-large-title">Google Drive</div>
+              <div class="integration-card-large-desc">Fetch reference records and store analytics outputs.</div>
+            </div>
+            <div class="integration-card-large" data-cat="database" title="Dropbox">
+              <i class="fa-brands fa-dropbox" style="color: #0061ff;"></i>
+              <div class="integration-card-large-title">Dropbox</div>
+              <div class="integration-card-large-desc">Sync shared files with team credentials securely.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Hubspot">
+              <i class="fa-brands fa-hubspot" style="color: #ff7a59;"></i>
+              <div class="integration-card-large-title">HubSpot</div>
+              <div class="integration-card-large-desc">Add scores and client contacts to pipelines.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Salesforce">
+              <i class="fa-brands fa-salesforce" style="color: #00a1e0;"></i>
+              <div class="integration-card-large-title">Salesforce</div>
+              <div class="integration-card-large-desc">Enterprise synchronization of custom pipeline nodes.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Shopify">
+              <i class="fa-brands fa-shopify" style="color: #96bf48;"></i>
+              <div class="integration-card-large-title">Shopify</div>
+              <div class="integration-card-large-desc">Sync sales items and process client checkouts.</div>
+            </div>
+            <div class="integration-card-large" data-cat="database" title="WordPress">
+              <i class="fa-brands fa-wordpress" style="color: #21759b;"></i>
+              <div class="integration-card-large-title">WordPress</div>
+              <div class="integration-card-large-desc">Publish articles and sync dashboard logs onto blogs.</div>
+            </div>
+            <div class="integration-card-large" data-cat="database" title="Notion">
+              <i class="fa-solid fa-note-sticky" style="color: #fff;"></i>
+              <div class="integration-card-large-title">Notion Workspace</div>
+              <div class="integration-card-large-desc">Compile meeting minutes and strategy guidelines.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Trello">
+              <i class="fa-brands fa-trello" style="color: #0079bf;"></i>
+              <div class="integration-card-large-title">Trello</div>
+              <div class="integration-card-large-desc">Log team checklist cards dynamically.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Asana">
+              <i class="fa-solid fa-list-check" style="color: #f06a6a;"></i>
+              <div class="integration-card-large-title">Asana</div>
+              <div class="integration-card-large-desc">Assign milestone tasks to teams automatically.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Zapier">
+              <i class="fa-solid fa-circle-nodes" style="color: #ff4a00;"></i>
+              <div class="integration-card-large-title">Zapier</div>
+              <div class="integration-card-large-desc">Link thousands of secondary applications easily.</div>
+            </div>
+            <div class="integration-card-large" data-cat="financial" title="Stripe">
+              <i class="fa-brands fa-stripe" style="color: #635bff;"></i>
+              <div class="integration-card-large-title">Stripe</div>
+              <div class="integration-card-large-desc">Log transaction values and adjust monthly subscriptions.</div>
+            </div>
+            <div class="integration-card-large" data-cat="financial" title="PayPal">
+              <i class="fa-brands fa-paypal" style="color: #003087;"></i>
+              <div class="integration-card-large-title">PayPal</div>
+              <div class="integration-card-large-desc">Manage invoicing checks and checkout portals.</div>
+            </div>
+            <div class="integration-card-large" data-cat="marketing" title="Mailchimp">
+              <i class="fa-brands fa-mailchimp" style="color: #ffe01b;"></i>
+              <div class="integration-card-large-title">Mailchimp</div>
+              <div class="integration-card-large-desc">Dispatch newsletter distributions to client listings.</div>
+            </div>
+          </div>
+          <div id="premium-integrations-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 8: ADVANCED AI FEATURES -->
+        <div class="dashboard-panel" id="panel-advanced-features">
+          <div class="panel-header">
+            <div>
+              <h2>Advanced AI Features</h2>
+              <p>Explore custom built-in pipelines to optimize operations</p>
+            </div>
+          </div>
+          
+          <div class="adv-features-grid">
+            <div class="adv-feature-card" data-tool="co-pilot">
+              <i class="fa-solid fa-feather-pointed"></i>
+              <h3>AI Co-Pilot</h3>
+              <p>Provides inline writing improvements and assists with scripting code queries.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="autonomous">
+              <i class="fa-solid fa-network-wired"></i>
+              <h3>Autonomous Agents</h3>
+              <p>Background workers that trigger secondary scripts when metrics cross values.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="meeting">
+              <i class="fa-solid fa-microphone-slash"></i>
+              <h3>AI Meeting Notes</h3>
+              <p>Extract transcripts, sentiment grids, and key checklist actions from voice recordings.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="email">
+              <i class="fa-solid fa-envelope-open-text"></i>
+              <h3>AI Email Writer</h3>
+              <p>Generates newsletters, follow-up messages, and support templates instantly.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="voice">
+              <i class="fa-solid fa-volume-high"></i>
+              <h3>AI Voice Assistant</h3>
+              <p>Speak vocal prompts directly to activate workspace settings.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="analyzer">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+              <h3>AI Data Analyzer</h3>
+              <p>Scans tables, identifies trends, and drafts charts summaries.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="summarizer">
+              <i class="fa-solid fa-book-open"></i>
+              <h3>AI Document Summarizer</h3>
+              <p>Condense long documents, reports, and PDFs into quick executive bullet lists.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="forecaster">
+              <i class="fa-solid fa-chart-line"></i>
+              <h3>Predictive Forecaster</h3>
+              <p>Runs regression algorithms across sales logs to map out future pipeline volumes.</p>
+            </div>
+            <div class="adv-feature-card" data-tool="translator">
+              <i class="fa-solid fa-language"></i>
+              <h3>Multi-lingual Translator</h3>
+              <p>Automatically handles translation for incoming user support tickets.</p>
+            </div>
+          </div>
+          <div id="premium-advanced-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 8: KNOWLEDGE BASE -->
+        <div class="dashboard-panel" id="panel-knowledge-base">
+          <div class="panel-header">
+            <div>
+              <h2>Knowledge Base</h2>
+              <p>Securely index documents and run semantic searches across your enterprise data</p>
+            </div>
+          </div>
+          
+          <div class="kb-workspace-split-new" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-grow: 1;">
+            <!-- Left Column: Upload Documents -->
+            <div class="kb-upload-card" id="kb-upload-dropzone" style="background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 250px;">
+              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: var(--color-primary); margin-bottom: 16px;"></i>
+              <h4 style="color:#fff; font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Upload Documents</h4>
+              <p style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 16px;">Files allowed: .pdf, .docx, .txt, .xlsx, .csv (Max 50MB)</p>
+              <input type="file" id="kb-file-input" style="display:none;" multiple>
+              <button type="button" class="btn-primary" id="btn-kb-browse" style="padding: 8px 18px; font-size: 0.75rem;">Browse Files</button>
+              
+              <!-- Upload Progress Container -->
+              <div class="kb-upload-progress-container" id="kb-progress-box" style="display:none; width: 100%; margin-top: 16px; text-align: left;">
+                <div class="kb-progress-header" style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-secondary); margin-bottom:4px;">
+                  <span id="kb-progress-filename">Uploading document...</span>
+                  <span id="kb-progress-pct">0%</span>
+                </div>
+                <div class="kb-progress-bar-wrapper" style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;">
+                  <div class="kb-progress-bar-fill" id="kb-progress-bar" style="width:0%; height:100%; background:var(--color-primary);"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Recent Documents -->
+            <div class="kb-recent-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; display: flex; flex-direction: column;">
+              <h4 style="color:#fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 16px;">Recent Documents</h4>
+              <ul class="kb-documents-list" id="kb-docs-ul" style="display:flex; flex-direction:column; gap:10px; list-style:none; padding:0;">
+                <li class="kb-doc-item" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:10px 14px; border-radius:10px;">
+                  <div class="kb-doc-info" style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-file-pdf" style="color: #ef4444; font-size: 1.1rem;"></i>
+                    <div style="display:flex; flex-direction:column;">
+                      <span class="kb-doc-name" style="font-size:0.75rem; color:#fff; font-weight:500;">Company Handbook.pdf</span>
+                      <span class="kb-doc-meta" style="font-size:0.6rem; color:var(--text-muted);">2.4 MB • Indexed on load</span>
+                    </div>
+                  </div>
+                  <button type="button" class="kb-doc-delete-btn" data-doc="Company Handbook.pdf" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                </li>
+                <li class="kb-doc-item" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:10px 14px; border-radius:10px;">
+                  <div class="kb-doc-info" style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-file-word" style="color: #3b82f6; font-size: 1.1rem;"></i>
+                    <div style="display:flex; flex-direction:column;">
+                      <span class="kb-doc-name" style="font-size:0.75rem; color:#fff; font-weight:500;">Product Strategy.docx</span>
+                      <span class="kb-doc-meta" style="font-size:0.6rem; color:var(--text-muted);">1.8 MB • Indexed on load</span>
+                    </div>
+                  </div>
+                  <button type="button" class="kb-doc-delete-btn" data-doc="Product Strategy.docx" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                </li>
+                <li class="kb-doc-item" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:10px 14px; border-radius:10px;">
+                  <div class="kb-doc-info" style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-file-powerpoint" style="color: #f97316; font-size: 1.1rem;"></i>
+                    <div style="display:flex; flex-direction:column;">
+                      <span class="kb-doc-name" style="font-size:0.75rem; color:#fff; font-weight:500;">Training Guide.pptx</span>
+                      <span class="kb-doc-meta" style="font-size:0.6rem; color:var(--text-muted);">4.1 MB • Indexed on load</span>
+                    </div>
+                  </div>
+                  <button type="button" class="kb-doc-delete-btn" data-doc="Training Guide.pptx" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                </li>
+                <li class="kb-doc-item" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:10px 14px; border-radius:10px;">
+                  <div class="kb-doc-info" style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-file-pdf" style="color: #ef4444; font-size: 1.1rem;"></i>
+                    <div style="display:flex; flex-direction:column;">
+                      <span class="kb-doc-name" style="font-size:0.75rem; color:#fff; font-weight:500;">Customer Research.pdf</span>
+                      <span class="kb-doc-meta" style="font-size:0.6rem; color:var(--text-muted);">956 KB • Indexed on load</span>
+                    </div>
+                  </div>
+                  <button type="button" class="kb-doc-delete-btn" data-doc="Customer Research.pdf" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                </li>
+                <li class="kb-doc-item" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:10px 14px; border-radius:10px;">
+                  <div class="kb-doc-info" style="display:flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-file-excel" style="color: #10b981; font-size: 1.1rem;"></i>
+                    <div style="display:flex; flex-direction:column;">
+                      <span class="kb-doc-name" style="font-size:0.75rem; color:#fff; font-weight:500;">Market Analysis.xlsx</span>
+                      <span class="kb-doc-meta" style="font-size:0.6rem; color:var(--text-muted);">1.2 MB • Indexed on load</span>
+                    </div>
+                  </div>
+                  <button type="button" class="kb-doc-delete-btn" data-doc="Market Analysis.xlsx" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bottom Search Query Bar -->
+          <div class="kb-bottom-search-wrapper" style="margin-top: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+            <h4 style="color:#fff; font-size:0.85rem; font-weight:600;">Ask anything from your documents...</h4>
+            <div class="kb-query-input-box" style="display:flex; gap:10px; width:100%;">
+              <input type="text" id="kb-query-input" placeholder="e.g. What is our remote work policy or product roadmap details?" style="flex-grow:1; padding:10px 14px; background:rgba(3,7,18,0.4); border:1px solid var(--border-color); border-radius:8px; color:#fff; font-size:0.78rem;">
+              <button type="button" id="btn-kb-query" style="padding:10px 18px; border-radius:8px; display:flex; align-items:center; gap:6px;" class="btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            </div>
+            <div class="kb-query-result" id="kb-query-response" style="display:none; padding:12px 14px; background:rgba(139,92,246,0.05); border:1px solid var(--color-primary); border-radius:10px; color:#fff; font-size:0.75rem; margin-top:6px;"></div>
+          </div>
+          <div id="premium-kb-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD: AI APP STORE & PLUGINS -->
+        <div class="dashboard-panel" id="panel-app-store">
+          <div class="panel-header">
+            <div>
+              <h2>AI App Store & Plugins</h2>
+              <p>Launch and run specialized interactive AI micro-services inside your workspace</p>
+            </div>
+          </div>
+          
+          <div class="app-store-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; flex-grow: 1;">
+            <!-- Card 1 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;"><i class="fa-solid fa-bullseye"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI SEO Optimizer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Inject high-volume semantic keywords and auto-generate meta tag descriptors.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="seo-opt" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-secondary); margin-bottom: 8px;"><i class="fa-solid fa-face-smile"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Sentiment Analyzer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Audit social media feedback and reviews to score positive/negative splits.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="sentiment" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-success); margin-bottom: 8px;"><i class="fa-solid fa-laptop-code"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Code Refactoring</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Optimize, document, and analyze JavaScript/Python scripts for efficiency.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="code-refactor" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-warning); margin-bottom: 8px;"><i class="fa-solid fa-palette"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Logo Generator</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Generate custom branded vector assets and base64 inline SVG logos.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="logo-gen" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;"><i class="fa-solid fa-database"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI SQL Builder</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Convert natural English queries into fully formatted PostgreSQL database scripts.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="sql-builder" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-secondary); margin-bottom: 8px;"><i class="fa-solid fa-file-shield"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI NDA Reviewer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Audit confidentiality agreements for risky terms and security liability scores.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="nda-reviewer" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 7 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-success); margin-bottom: 8px;"><i class="fa-solid fa-microphone-lines"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Voice Cloner</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Select pitch, rate, and gender options to synthesize customized cloned vocal scripts.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="voice-cloner" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 8 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-warning); margin-bottom: 8px;"><i class="fa-solid fa-shield-halved"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Fraud Detector</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Analyze transaction logs to predict fraud anomalies and score risk scores.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="fraud-detector" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 9 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;"><i class="fa-solid fa-filter"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Lead Scraper</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Parse and scrape structured emails, profiles, and contact fields from text copy.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="lead-scraper" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 10 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-secondary); margin-bottom: 8px;"><i class="fa-solid fa-receipt"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Expense Classifier</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Audit receipt values and map items automatically to standard tax categories.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="expense-classifier" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 11 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-success); margin-bottom: 8px;"><i class="fa-solid fa-pen-nib"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Product Copywriter</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Draft marketing copy and headlines for catalog products.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="product-copy" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 12 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-warning); margin-bottom: 8px;"><i class="fa-solid fa-sliders"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Brand Tone Tuner</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Tune brand copy voice between sarcastic, professional, or casual tones.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="tone-tuner" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 13 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Invoice Automator</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Input client deliverables to calculate service totals and render billing charts.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="invoice-automator" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 14 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-secondary); margin-bottom: 8px;"><i class="fa-solid fa-envelope-open-text"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Cold Outreach Composer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Generate high-converting cold pitch sequences with personalized value offers.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="cold-email" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 15 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-success); margin-bottom: 8px;"><i class="fa-solid fa-briefcase"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Job Description Builder</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Draft structured, ATS-compliant job vacancy posts targeted to specific role skills.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="jd-gen" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 16 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-warning); margin-bottom: 8px;"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Presentation Designer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Convert a topic outline into a clean 3-slide mock presentation outline deck copy.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="ppt-designer" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 17 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;"><i class="fa-solid fa-user-minus"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Churn Predictor</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Calculate customer cancellation likelihood matrices based on service logs.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="churn-predictor" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 18 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-secondary); margin-bottom: 8px;"><i class="fa-solid fa-magnifying-glass-dollar"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Price Auditor</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Audit product prices against competitors to optimize pricing suggestions.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="price-auditor" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 19 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-success); margin-bottom: 8px;"><i class="fa-solid fa-spider"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Web Scraper</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Extract content layers and meta descriptors from simulated URL target pages.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="web-scraper" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 20 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-warning); margin-bottom: 8px;"><i class="fa-solid fa-tags"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI SEO Tag Extractor</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Scan web address headers to list meta keywords, og:image details, and anchors.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="tag-extractor" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 21 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-primary); margin-bottom: 8px;"><i class="fa-solid fa-compress"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Text Summarizer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Condense long pages and documentation inputs into single structured bullet outlines.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="text-summarizer" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+
+            <!-- Card 22 -->
+            <div class="dashboard-card" style="padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 150px;">
+              <div>
+                <div style="font-size: 1.4rem; color: var(--color-secondary); margin-bottom: 8px;"><i class="fa-solid fa-spell-check"></i></div>
+                <h4 style="color:#fff; font-size:0.85rem; font-weight:700;">AI Grammar Fixer</h4>
+                <p style="font-size:0.68rem; color:var(--text-secondary); line-height:1.4; margin-top:4px;">Scan draft copy to automatically proofread, fix spelling errors, and polish clarity.</p>
+              </div>
+              <button type="button" class="btn-primary btn-launch-plugin" data-plugin="grammar-fixer" style="padding: 6px 12px; font-size: 0.7rem; justify-content: center; margin-top: 12px;">Launch Tool</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD: SETTINGS -->
+        <div class="dashboard-panel" id="panel-settings">
+          <div class="panel-header">
+            <div>
+              <h2>Settings & Customization</h2>
+              <p>Tailor your NexusHub AI assistant, models, voice controls, and themes</p>
+            </div>
+            <div class="theme-switch-wrapper" style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:0.8rem; font-weight:600;"><i class="fa-solid fa-circle-half-stroke"></i> System Theme:</span>
+              <button type="button" class="btn-primary" id="btn-toggle-theme" style="padding:6px 14px; font-size:0.75rem; border-radius:12px; display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-moon"></i> <span>Dark Mode</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="settings-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex-grow: 1;">
+            
+            <!-- Section 1: Core AI Preferences -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-brain" style="color:var(--color-primary);"></i> AI Model Config</h4>
+              
+              <div class="playground-form-group">
+                <label>Active LLM Engine</label>
+                <select id="settings-ai-model">
+                  <option value="llama">Llama-3-70B-Instruct (Default)</option>
+                  <option value="claude">Claude-3.5-Sonnet (DeepMind)</option>
+                  <option value="mistral">Mistral-Large-v2 (Fast)</option>
+                  <option value="gpt4">GPT-4o-Turbo (Creative)</option>
+                </select>
+              </div>
+              
+              <div class="playground-form-group">
+                <label>Creativity Temperature (<span id="settings-temp-val">0.7</span>)</label>
+                <input type="range" id="settings-temp" min="0" max="1" step="0.05" value="0.7" style="width:100%;">
+              </div>
+              
+              <div class="playground-form-group">
+                <label>Max Token Length Limit (<span id="settings-tokens-val">2048</span>)</label>
+                <input type="range" id="settings-max-tokens" min="256" max="8192" step="256" value="2048" style="width:100%;">
+              </div>
+
+              <div class="playground-form-group">
+                <label>System Prompt Instruction Override</label>
+                <textarea id="settings-system-prompt" rows="3" placeholder="You are a professional co-pilot..." style="width:100%;">You are an advanced, empathetic business automation copilot inside the NexusHub AI workspace dashboard.</textarea>
+              </div>
+            </div>
+
+            <!-- Section 2: Speech & Vocal Synthesis -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-volume-high" style="color:var(--color-secondary);"></i> Speech & Voice</h4>
+              
+              <div class="playground-form-group">
+                <label>Speaker Accent Voice</label>
+                <select id="settings-tts-voice">
+                  <option value="default">Default System Reader</option>
+                  <!-- Populated dynamically via JS -->
+                </select>
+              </div>
+
+              <div class="playground-form-group">
+                <label>Speech Output Translation</label>
+                <select id="settings-translation-lang">
+                  <option value="none">Disabled (English Default)</option>
+                  <option value="es">Spanish / Español</option>
+                  <option value="te">Telugu / తెలుగు</option>
+                  <option value="fr">French / Français</option>
+                  <option value="de">German / Deutsch</option>
+                </select>
+              </div>
+              
+              <div class="playground-form-group">
+                <label>Vocal Speaking Volume (<span id="settings-vol-val">80%</span>)</label>
+                <input type="range" id="settings-tts-volume" min="0" max="1" step="0.1" value="0.8" style="width:100%;">
+              </div>
+              
+              <div class="playground-form-group">
+                <label>Speaking Speed / Rate (<span id="settings-rate-val">1.0x</span>)</label>
+                <input type="range" id="settings-tts-rate" min="0.5" max="2" step="0.1" value="1.0" style="width:100%;">
+              </div>
+
+              <div class="playground-form-group">
+                <label>Speaking Pitch Tone (<span id="settings-pitch-val">1.0</span>)</label>
+                <input type="range" id="settings-tts-pitch" min="0.5" max="2" step="0.1" value="1.0" style="width:100%;">
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span style="font-size:0.75rem; color:var(--text-secondary);">Enable Voice Speech Recognition</span>
+                <label class="switch">
+                  <input type="checkbox" id="settings-enable-speech-rec" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Section 3: Environment Preferences -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-sliders" style="color:var(--color-warning);"></i> Environment Core</h4>
+              
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="playground-form-group">
+                  <label>Telemetry Lag (ms)</label>
+                  <input type="number" id="settings-telemetry-interval" min="500" max="30000" step="500" value="5000">
+                </div>
+                <div class="playground-form-group">
+                  <label>Auto-Save Sec</label>
+                  <input type="number" id="settings-autosave-interval" min="5" max="300" step="5" value="30">
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="playground-form-group">
+                  <label>Storage Strategy</label>
+                  <select id="settings-storage-strategy">
+                    <option value="local">Local Storage</option>
+                    <option value="session">Session State</option>
+                    <option value="memory">Volatile Cache</option>
+                  </select>
+                </div>
+                <div class="playground-form-group">
+                  <label>System Log Level</label>
+                  <select id="settings-log-level">
+                    <option value="info">Info / Audits</option>
+                    <option value="warn">Warnings only</option>
+                    <option value="debug">Verbose Debug</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="playground-form-group">
+                <label>Audio Input Source</label>
+                <select id="settings-audio-input">
+                  <option value="default">Default Mic Hardware</option>
+                </select>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="playground-form-group">
+                  <label>Default Currency</label>
+                  <select id="settings-currency">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="INR">INR (₹)</option>
+                  </select>
+                </div>
+                <div class="playground-form-group">
+                  <label>Notification Alert</label>
+                  <select id="settings-alert-type">
+                    <option value="badge">Status Badges</option>
+                    <option value="popup">HTML Popups</option>
+                    <option value="all">Sound & Popups</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="playground-form-group">
+                <label>ATS Resume Match Priorities (Skills: <span id="settings-weight-val">60%</span>)</label>
+                <input type="range" id="settings-resume-ats-weight" min="10" max="90" step="5" value="60" style="width:100%;">
+              </div>
+
+              <div class="playground-form-group" style="margin-top: 8px;">
+                <label>Google OAuth Client ID (from Cloud Console)</label>
+                <input type="text" id="settings-google-client-id" placeholder="e.g. 636480691678-nfijok21gr459sftck8fh1r6rg8hkavf.apps.googleusercontent.com" style="width:100%;">
+              </div>
+            </div>
+            
+          </div>
+
+          <div class="settings-grid-wrapper" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top:20px;">
+            <!-- Card 4: Security Shield -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-shield-halved" style="color:var(--color-primary);"></i> Security & Access</h4>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.75rem; color:var(--text-secondary);">Enable 2FA OTP Simulator</span>
+                <label class="switch">
+                  <input type="checkbox" id="settings-enable-2fa">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div id="settings-2fa-otp-container" style="display:none; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); padding:10px; border-radius:8px; text-align:center; font-family:monospace; font-size:0.95rem; color:var(--color-secondary);">
+                OTP Code: <strong id="settings-2fa-otp-val">000 000</strong>
+              </div>
+              <div class="playground-form-group">
+                <label>IP Access Whitelisting (comma-separated)</label>
+                <input type="text" id="settings-ip-whitelist" class="premium-input" placeholder="e.g. 192.168.1.1, 10.0.0.8">
+              </div>
+              <div class="playground-form-group">
+                <label>Auto-Session Timeout (<span id="settings-timeout-val">15m</span>)</label>
+                <input type="range" id="settings-session-timeout" min="5" max="120" step="5" value="15" style="width:100%;">
+              </div>
+              <div class="playground-form-group">
+                <label>API Permission Scope Checks</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.7rem; color:var(--text-secondary);">
+                  <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" id="scope-read" checked> Read</label>
+                  <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" id="scope-write" checked> Write</label>
+                  <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" id="scope-delete"> Delete</label>
+                  <label style="display:flex; align-items:center; gap:4px;"><input type="checkbox" id="scope-inference" checked> Inference</label>
+                </div>
+              </div>
+            </div>
+            <!-- Card 5: Custom Branding -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-palette" style="color:var(--color-secondary);"></i> Branding & Style</h4>
+              <div class="playground-form-group">
+                <label>Platform Interface Color Theme</label>
+                <select id="settings-theme-color">
+                  <option value="cyber">Obsidian Indigo (Default)</option>
+                  <option value="amber">Solarized Amber</option>
+                  <option value="crimson">Crimson Dark</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Brand Logo Selector (Mock Inbound)</label>
+                <input type="file" id="settings-logo-upload" style="font-size:0.7rem;">
+              </div>
+              <div class="playground-form-group">
+                <label>Markdown Code Font Family</label>
+                <select id="settings-code-font">
+                  <option value="Courier New">Courier New (Default)</option>
+                  <option value="monospace">Standard Monospace</option>
+                  <option value="Outfit">Outfit sans-serif</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Response Text Size (<span id="settings-text-size-val">14px</span>)</label>
+                <input type="range" id="settings-text-size-slider" min="11" max="18" value="14" style="width:100%;">
+              </div>
+              <div class="playground-form-group">
+                <label>Micro-Animation Transition Speed</label>
+                <select id="settings-anim-speed">
+                  <option value="0.15s">Fast (0.15s)</option>
+                  <option value="0.3s" selected>Standard (0.3s)</option>
+                  <option value="0.6s">Cinematic (0.6s)</option>
+                </select>
+              </div>
+            </div>
+            <!-- Card 6: System Diagnostics -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-gauge-high" style="color:var(--color-warning);"></i> Diagnostics & Reports</h4>
+              <button type="button" class="btn-primary" id="btn-settings-health-export" style="font-size:0.72rem; padding:8px; justify-content:center;">
+                <i class="fa-solid fa-file-export"></i> Download Health Report JSON
+              </button>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.75rem; color:var(--text-secondary);">Schedule Daily Email Reports</span>
+                <label class="switch">
+                  <input type="checkbox" id="settings-email-reports">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <button type="button" class="btn-primary" id="btn-settings-purge" style="font-size:0.72rem; padding:8px; justify-content:center; background:#ef4444 !important; border-color:#ef4444 !important;">
+                <i class="fa-solid fa-trash-can"></i> Purge Local Database Cache
+              </button>
+              <div class="playground-form-group">
+                <label>Telemetry Sampling Frequency (<span id="settings-telemetry-val">5s</span>)</label>
+                <input type="range" id="settings-telemetry-rate" min="1" max="60" value="5" style="width:100%;">
+              </div>
+              <div class="playground-form-group">
+                <label>Active DOM Frame Latency Gauge</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <div style="font-family:monospace; font-size:0.75rem; color:#10b981; font-weight:700;">FPS: <span id="settings-fps-gauge">60</span></div>
+                  <div style="flex-grow:1; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                    <div id="settings-fps-bar" style="width:100%; height:100%; background:#10b981;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Card 7: User Profile Settings -->
+            <div class="dashboard-card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+              <h4 style="color:#fff; font-size: 0.9rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px; margin-bottom:4px;"><i class="fa-solid fa-user-gear" style="color:#10b981;"></i> User Profile Config</h4>
+              
+              <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 4px;">
+                <div class="avatar-container" style="position: relative; width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid var(--color-primary); background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <img id="settings-profile-preview" src="https://randomuser.me/api/portraits/men/32.jpg" style="width: 100%; height: 100%; object-fit: cover;" alt="Preview">
+                  <span id="settings-profile-initials" style="display: none; font-size: 1.2rem; font-weight: 700; color: #fff;">V</span>
+                </div>
+                <div class="playground-form-group" style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 0.65rem; color: var(--text-secondary);">Custom Profile Picture</label>
+                  <label class="btn-secondary" style="font-size: 0.65rem; padding: 5px 10px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; justify-content: center; width: fit-content; margin: 0;">
+                    <i class="fa-solid fa-upload"></i> Upload File
+                    <input type="file" id="settings-profile-upload" accept="image/*" style="display: none;">
+                  </label>
+                </div>
+              </div>
+              
+              <div class="playground-form-group">
+                <label>Display Username</label>
+                <input type="text" id="settings-profile-name" class="premium-input" placeholder="e.g. Vara Prasad" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:8px; font-size:0.8rem;">
+              </div>
+
+              <div class="playground-form-group">
+                <label>Profile Niche / Title</label>
+                <input type="text" id="settings-profile-niche" class="premium-input" placeholder="e.g. AI Product Manager" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:#fff; padding:8px 12px; border-radius:8px; font-size:0.8rem;" value="Lead Automation Architect">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: Saved Banner Settings -->
+          <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px 20px; border-radius:14px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <i class="fa-solid fa-key" style="color:var(--color-primary);"></i>
+              <span style="font-size:0.75rem; color:var(--text-secondary);">Simulated API Vault Settings:</span>
+              <input type="password" id="settings-api-key-vault" placeholder="sk-proj-...................." style="background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:#fff; font-size:0.7rem; padding:4px 8px; border-radius:6px; width:200px; font-family:monospace;">
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button type="button" class="btn-secondary" id="btn-settings-reset" style="padding:6px 12px; font-size:0.75rem;">Restore Defaults</button>
+              <button type="button" class="btn-primary" id="btn-settings-save" style="padding:6px 18px; font-size:0.75rem; display:inline-flex; align-items:center; gap:6px;">
+                <i class="fa-solid fa-floppy-disk"></i> Save Settings
+              </button>
+            </div>
+        </div>
+
+
+
+        <!-- DASHBOARD 11: WEBSITE BUILDER -->
+        <div class="dashboard-panel" id="panel-web-builder">
+          <div class="panel-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button type="button" class="btn-secondary btn-back-to-suite" style="padding: 6px 14px; font-size: 0.72rem;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Suite Catalog
+              </button>
+              <h2>Website Builder</h2>
+            </div>
+          </div>
+          
+          <div class="playground-split" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="playground-form-panel">
+              <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">Create Website with AI</h4>
+              <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Describe your target objectives, styling preferences, or target columns.</p>
+              <div class="playground-form-group">
+                <label>Website Name / Title</label>
+                <input type="text" id="web-title-panel" placeholder="e.g. Mercer Cybersecurity Hub">
+              </div>
+              <div class="playground-form-group">
+                <label>Design Style Theme</label>
+                <select id="web-theme-panel">
+                  <option value="cyber">Cybernetic Neon Dark</option>
+                  <option value="light">Outfit Minimal Bright</option>
+                  <option value="glass">Translucent Glassmorphism</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Describe your website...</label>
+                <textarea id="web-purpose-panel" rows="4" placeholder="e.g. A consulting company, pricing catalog, book call..."></textarea>
+              </div>
+              <button type="button" class="btn-primary" id="btn-web-generate-panel" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-globe"></i> Compile Website Layout
+              </button>
+            </div>
+            
+            <div class="playground-preview-panel" id="web-preview-pane-panel">
+              <div style="text-align:center; color:var(--text-muted);">
+                <i class="fa-solid fa-compass-drafting" style="font-size:3rem; margin-bottom:12px;"></i>
+                <p>Input website tags to compile a layout preview.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Template Section -->
+          <div class="web-templates-section" style="margin-top: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 16px;">
+            <h4 style="color:#fff; font-size:0.85rem; font-weight:700; margin-bottom:12px;">Or choose a template</h4>
+            <div class="web-templates-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <div class="web-template-card" data-template="business" style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); border-radius:10px; padding:12px; cursor:pointer; text-align:center; transition: all 0.2s;">
+                <i class="fa-solid fa-briefcase" style="font-size:1.5rem; color:var(--color-primary); margin-bottom:6px;"></i>
+                <div style="font-size:0.75rem; font-weight:600; color:#fff;">Business</div>
+              </div>
+              <div class="web-template-card" data-template="portfolio" style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); border-radius:10px; padding:12px; cursor:pointer; text-align:center; transition: all 0.2s;">
+                <i class="fa-solid fa-user-ninja" style="font-size:1.5rem; color:var(--color-secondary); margin-bottom:6px;"></i>
+                <div style="font-size:0.75rem; font-weight:600; color:#fff;">Portfolio</div>
+              </div>
+              <div class="web-template-card" data-template="saas" style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); border-radius:10px; padding:12px; cursor:pointer; text-align:center; transition: all 0.2s;">
+                <i class="fa-solid fa-cubes" style="font-size:1.5rem; color:var(--color-success); margin-bottom:6px;"></i>
+                <div style="font-size:0.75rem; font-weight:600; color:#fff;">SaaS</div>
+              </div>
+              <div class="web-template-card" data-template="landing" style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); border-radius:10px; padding:12px; cursor:pointer; text-align:center; transition: all 0.2s;">
+                <i class="fa-solid fa-rocket" style="font-size:1.5rem; color:var(--color-warning); margin-bottom:6px;"></i>
+                <div style="font-size:0.75rem; font-weight:600; color:#fff;">Landing Page</div>
+              </div>
+            </div>
+          </div>
+          <div id="premium-web-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 12: PROPOSAL GENERATOR -->
+        <div class="dashboard-panel" id="panel-proposal-generator">
+          <div class="panel-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button type="button" class="btn-secondary btn-back-to-suite" style="padding: 6px 14px; font-size: 0.72rem;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Suite Catalog
+              </button>
+              <h2>Proposal Generator</h2>
+            </div>
+          </div>
+          
+          <div class="playground-split" style="display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px;">
+            <!-- Left: Form -->
+            <div class="playground-form-panel">
+              <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">Generate Professional Proposals</h4>
+              <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Automate proposals, billing details, and contract templates.</p>
+              <div class="playground-form-group">
+                <label>Select Type</label>
+                <select id="prop-template-panel">
+                  <option value="saas">SaaS Platform Agreement</option>
+                  <option value="agency">Agency Consulting Contract</option>
+                  <option value="nd">Non-Disclosure Agreement</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Project Title / Description</label>
+                <input type="text" id="prop-scope-panel" placeholder="e.g. AI Automation Project">
+              </div>
+              <div class="playground-form-group">
+                <label>Client Name / Company</label>
+                <input type="text" id="prop-client-panel" placeholder="e.g. Acme Corporation">
+              </div>
+              <div class="playground-form-group">
+                <label>Pricing Model & Budget ($)</label>
+                <input type="text" id="prop-budget-panel" placeholder="e.g. $8,500 One-time fee">
+              </div>
+              <div class="playground-form-group">
+                <label>Milestones (semicolon-separated)</label>
+                <input type="text" id="prop-milestones-panel" placeholder="e.g. Discovery & Scope; UI Mockups; API Coding; Deployment" value="Discovery & Scope; UI/UX Mockups; AI Integration; Client QA & Launch">
+              </div>
+              <div class="playground-form-group">
+                <label>Contract Terms / SLA / Notes</label>
+                <textarea id="prop-terms-panel" rows="3" placeholder="e.g. Net 30 payment terms; 1 year warranty...">Net-15 payment terms. Code base ownership handed over upon final installment. Includes 6 months of bug-fixing SLA support.</textarea>
+              </div>
+              <button type="button" class="btn-primary" id="btn-prop-generate-panel" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-file-signature"></i> Generate Proposal
+              </button>
+            </div>
+            
+            <!-- Center: Preview -->
+            <div class="playground-preview-panel" id="prop-preview-pane-panel" style="min-height: 380px;">
+              <div style="text-align:center; color:var(--text-muted); width:100%;">
+                <i class="fa-solid fa-file-invoice" style="font-size:3rem; margin-bottom:12px;"></i>
+                <p>Formulate a contract proposal outline to see the drafted document preview.</p>
+              </div>
+            </div>
+
+            <!-- Right: Recent Proposals -->
+            <div class="recent-proposals-panel" style="background: rgba(8,12,22,0.4); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; display: flex; flex-direction: column;">
+              <h4 style="color:#fff; font-size:0.85rem; font-weight:700; margin-bottom:12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Recent Proposals</h4>
+              <ul class="recent-proposals-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+                <li class="recent-proposal-item" data-prop="automation" style="padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 0.72rem; transition: background 0.2s;">
+                  <div style="font-weight: 600; color: #fff;">AI Automation Proposal</div>
+                  <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 2px;">Acme Corp • $8,500</div>
+                </li>
+                <li class="recent-proposal-item" data-prop="digital" style="padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 0.72rem; transition: background 0.2s;">
+                  <div style="font-weight: 600; color: #fff;">Digital Transformation</div>
+                  <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 2px;">Globex • $15,000</div>
+                </li>
+                <li class="recent-proposal-item" data-prop="marketing" style="padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 0.72rem; transition: background 0.2s;">
+                  <div style="font-weight: 600; color: #fff;">Marketing Strategy</div>
+                  <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 2px;">Initech • $5,000</div>
+                </li>
+                <li class="recent-proposal-item" data-prop="webdev" style="padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 0.72rem; transition: background 0.2s;">
+                  <div style="font-weight: 600; color: #fff;">Website Development</div>
+                  <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 2px;">Umbrella Corp • $12,000</div>
+                </li>
+                <li class="recent-proposal-item" data-prop="crm" style="padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 0.72rem; transition: background 0.2s;">
+                  <div style="font-weight: 600; color: #fff;">CRM Implementation</div>
+                  <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 2px;">Weyland Yutani • $20,000</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div id="premium-proposal-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 13: RESUME ANALYZER -->
+        <div class="dashboard-panel" id="panel-resume-analyzer">
+          <div class="panel-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button type="button" class="btn-secondary btn-back-to-suite" style="padding: 6px 14px; font-size: 0.72rem;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Suite Catalog
+              </button>
+              <h2>Resume Analyzer</h2>
+            </div>
+          </div>
+          
+          <div class="playground-split">
+            <div class="playground-form-panel">
+              <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">Resume Analysis</h4>
+              <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Evaluate applicant parameters against job descriptions.</p>
+              <div class="playground-form-group">
+                <label>Load Resume Template</label>
+                <select id="resume-sample-templates">
+                  <option value="none">-- Select Template --</option>
+                  <option value="software">Senior Software Engineer (John Doe)</option>
+                  <option value="marketing">Digital Marketing Manager (Sarah Jenkins)</option>
+                  <option value="data">Data Scientist (Alex Rivera)</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Target Job Title</label>
+                <input type="text" id="resume-job-panel" placeholder="e.g. Software Engineer" value="Software Engineer">
+              </div>
+              <div class="playground-form-group">
+                <label>Applicant Resume Text</label>
+                <textarea id="resume-text-panel" rows="6" placeholder="Paste applicant resume copy here..."></textarea>
+              </div>
+              <button type="button" class="btn-primary" id="btn-resume-analyze-panel" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-brain"></i> Score & Index Resume
+              </button>
+            </div>
+            
+            <div class="playground-preview-panel" id="resume-preview-pane-panel">
+              <div style="width:100%; display:flex; flex-direction:column; gap:16px; text-align:left;">
+                <div style="display:flex; align-items:center; gap:16px; background:rgba(255,255,255,0.02); padding:16px; border-radius:12px; border:1px solid var(--border-color);">
+                  <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="Candidate" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--color-primary);">
+                  <div>
+                    <h4 style="color:#fff; margin:0; font-size:0.95rem;">John Doe</h4>
+                    <span style="font-size:0.7rem; color:var(--text-secondary);">Software Engineer</span>
+                    <span style="font-size:0.65rem; color:var(--text-muted); display:block; margin-top:2px;"><i class="fa-solid fa-envelope"></i> john.doe@email.com</span>
+                  </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+                  <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:16px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                    <span style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:8px;">ATS Match Score</span>
+                    <div class="resume-score-ring" style="--score-pct: 85;">
+                      <div class="resume-score-value">85</div>
+                    </div>
+                  </div>
+                  
+                  <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:16px; border-radius:12px; text-align:left;">
+                    <span style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:8px;">Skills Match</span>
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                      <div style="font-size:0.65rem;">JavaScript <span style="float:right; color:var(--color-success);">90%</span></div>
+                      <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;"><div style="width:90%; height:100%; background:var(--color-success);"></div></div>
+                      <div style="font-size:0.65rem; margin-top:2px;">React <span style="float:right; color:var(--color-success);">85%</span></div>
+                      <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;"><div style="width:85%; height:100%; background:var(--color-success);"></div></div>
+                      <div style="font-size:0.65rem; margin-top:2px;">NodeJS <span style="float:right; color:var(--color-success);">80%</span></div>
+                      <div style="height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden;"><div style="width:80%; height:100%; background:var(--color-success);"></div></div>
+                    </div>
+                  </div>
+
+                  <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:16px; border-radius:12px; text-align:left;">
+                    <span style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:8px;">Recommendations</span>
+                    <ul class="recommendations-list" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.65rem; color: var(--text-secondary);">
+                      <li style="display: flex; gap: 6px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-exclamation" style="color: var(--color-warning); margin-top: 2px;"></i>
+                        <span>Add more project details</span>
+                      </li>
+                      <li style="display: flex; gap: 6px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-exclamation" style="color: var(--color-warning); margin-top: 2px;"></i>
+                        <span>Include achievements</span>
+                      </li>
+                      <li style="display: flex; gap: 6px; align-items: flex-start;">
+                        <i class="fa-solid fa-circle-exclamation" style="color: var(--color-warning); margin-top: 2px;"></i>
+                        <span>Improve skills layout</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="premium-resume-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 14: INTERVIEW SIMULATOR -->
+        <div class="dashboard-panel" id="panel-interview-simulator">
+          <div class="panel-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button type="button" class="btn-secondary btn-back-to-suite" style="padding: 6px 14px; font-size: 0.72rem;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Suite Catalog
+              </button>
+              <h2>Interview Simulator</h2>
+            </div>
+          </div>
+          
+          <div class="playground-split">
+            <div class="playground-form-panel">
+              <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">Mock Interview</h4>
+              <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Choose interview parameters to execute interactive grading reviews.</p>
+              
+              <div class="playground-form-group">
+                <label>Target Topic / Role</label>
+                <input type="text" id="interview-topic-panel" placeholder="e.g. React Developer" value="React Developer">
+              </div>
+              <div class="playground-form-group">
+                <label>Number of Questions</label>
+                <input type="number" id="interview-count-panel" min="2" max="10" value="3">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px; margin-top: 10px;">
+                <label style="font-size:0.75rem; color:var(--text-secondary); font-weight:500;">Choose Interview Type</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                  <button type="button" class="btn-secondary interview-type-btn-panel active" data-type="hr" style="font-size:0.7rem; padding:10px; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-user-tie"></i> HR Interview</button>
+                  <button type="button" class="btn-secondary interview-type-btn-panel" data-type="tech" style="font-size:0.7rem; padding:10px; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-laptop-code"></i> Technical</button>
+                  <button type="button" class="btn-secondary interview-type-btn-panel" data-type="coding" style="font-size:0.7rem; padding:10px; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-code"></i> Coding</button>
+                  <button type="button" class="btn-secondary interview-type-btn-panel" data-type="behavior" style="font-size:0.7rem; padding:10px; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-brain"></i> Behavioral</button>
+                </div>
+              </div>
+              
+              <div class="playground-form-group" id="interview-chat-form-panel" style="display:none; gap:10px; margin-top:12px;">
+                <label style="color:#fff; font-size:0.75rem;" id="interview-question-label-panel">Question: ...</label>
+                <textarea id="interview-answer-panel" rows="3" placeholder="Type candidate answer response here..."></textarea>
+                <button type="button" class="btn-primary" id="btn-interview-submit-answer-panel" style="font-size:0.72rem; padding:8px 12px; justify-content:center;">Submit Answer</button>
+              </div>
+              
+              <button type="button" class="btn-primary" id="btn-interview-start-panel" style="width:100%; justify-content:center; margin-top:12px;">
+                <i class="fa-solid fa-play"></i> Start Interview
+              </button>
+            </div>
+            
+            <div class="playground-preview-panel" id="interview-preview-pane-panel">
+              <div style="width:100%; display:flex; flex-direction:column; gap:16px;">
+                <h4 style="color:#fff; font-size:0.9rem; text-align:left; border-bottom:1px solid var(--border-color); padding-bottom:6px;">Practice Progress</h4>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+                  <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                    <span style="font-size:0.65rem; color:var(--text-muted); display:block; margin-bottom:4px;">Completed</span>
+                    <span style="font-size:1.4rem; font-weight:700; color:#fff;">12</span>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                    <span style="font-size:0.65rem; color:var(--text-muted); display:block; margin-bottom:4px;">Avg Score</span>
+                    <span style="font-size:1.4rem; font-weight:700; color:var(--color-primary);">78%</span>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                    <span style="font-size:0.65rem; color:var(--text-muted); display:block; margin-bottom:4px;">Best Score</span>
+                    <span style="font-size:1.4rem; font-weight:700; color:var(--color-secondary);">92%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="premium-interview-additions" class="premium-feature-container"></div>
+        </div>
+
+        <!-- DASHBOARD 15: OPEN INNOVATION LAB -->
+        <div class="dashboard-panel" id="panel-open-lab">
+          <div class="panel-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <button type="button" class="btn-secondary btn-back-to-suite" style="padding: 6px 14px; font-size: 0.72rem;">
+                <i class="fa-solid fa-arrow-left"></i> Back to Suite Catalog
+              </button>
+              <h2>Open Innovation Lab</h2>
+            </div>
+          </div>
+          
+          <div class="playground-split">
+            <div class="playground-form-panel">
+              <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">Build. Innovate. Transform.</h4>
+              <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Manage weights sandbox training and custom developer integrations.</p>
+              <div class="playground-form-group">
+                <label>Select Base Model</label>
+                <select id="lab-model-panel">
+                  <option value="llama">Llama-3-70B-Instruct</option>
+                  <option value="mistral">Mistral-Large-v2</option>
+                  <option value="claude">Claude-3.5-Sonnet</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Fine-tuning Dataset</label>
+                <select id="lab-dataset-panel">
+                  <option value="support">Customer Support Logs v1.2</option>
+                  <option value="sales">Sales Pitch Transcripts v2.0</option>
+                  <option value="code">React SVG Redraw Snippets</option>
+                </select>
+              </div>
+              <div class="playground-form-group">
+                <label>Learning Rate</label>
+                <input type="text" id="lab-lr-panel" value="2e-5" style="padding:10px;">
+              </div>
+              <button type="button" class="btn-primary" id="btn-lab-launch-panel" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-flask"></i> Launch Fine-Tuning Session
+              </button>
+              
+              <!-- Inference Sandbox Section -->
+              <div id="lab-sandbox-inference" style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 10px; display: none; flex-direction: column; gap: 8px;">
+                <h4 style="color:#fff; font-size:0.8rem; font-weight:700;">Prompt Sandbox Tester</h4>
+                <input type="text" id="lab-sandbox-prompt" placeholder="Type prompt to test fine-tuned model..." style="padding:8px; font-size:0.75rem; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); border-radius:6px; color:#fff; outline:none; font-family: Outfit, sans-serif;">
+                <button type="button" id="btn-lab-sandbox-run" class="btn-primary" style="font-size:0.7rem; padding:6px 12px; justify-content:center;">Test Model Inference</button>
+                <div id="lab-sandbox-output" style="font-size:0.7rem; color:#10b981; font-family:monospace; background:rgba(0,0,0,0.4); padding:8px; border-radius:6px; min-height:40px; display:none; white-space:pre-wrap;"></div>
+              </div>
+            </div>
+            
+            <div class="playground-preview-panel" id="lab-preview-pane-panel">
+              <div style="width:100%; display:flex; flex-direction:column; gap:16px; text-align:left; height: 100%; justify-content: space-between;">
+                <div>
+                  <h4 style="color:#fff; font-size:0.95rem; font-weight:700; border-bottom:1px solid var(--border-color); padding-bottom:6px; margin-bottom:12px;">Innovation Modules</h4>
+                  <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;">
+                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                      <i class="fa-solid fa-users" style="color:var(--color-primary); font-size:1.2rem; margin-bottom:6px;"></i>
+                      <h5 style="color:#fff; font-size:0.78rem;">Custom AI Agents</h5>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                      <i class="fa-solid fa-sitemap" style="color:var(--color-secondary); font-size:1.2rem; margin-bottom:6px;"></i>
+                      <h5 style="color:#fff; font-size:0.78rem;">AI Workflows</h5>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                      <i class="fa-solid fa-link" style="color:var(--color-success); font-size:1.2rem; margin-bottom:6px;"></i>
+                      <h5 style="color:#fff; font-size:0.78rem;">API Connectors</h5>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                      <i class="fa-solid fa-microchip" style="color:var(--color-warning); font-size:1.2rem; margin-bottom:6px;"></i>
+                      <h5 style="color:#fff; font-size:0.78rem;">Model Training</h5>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                      <i class="fa-solid fa-chart-line" style="color:#60a5fa; font-size:1.2rem; margin-bottom:6px;"></i>
+                      <h5 style="color:#fff; font-size:0.78rem;">Data Pipelines</h5>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:10px; text-align:center;">
+                      <i class="fa-solid fa-wrench" style="color:#f472b6; font-size:1.2rem; margin-bottom:6px;"></i>
+                      <h5 style="color:#fff; font-size:0.78rem;">Internal Tools</h5>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn-primary" id="btn-lab-create-project" style="width:100%; justify-content:center; margin-top: 16px;">
+                  <i class="fa-solid fa-circle-plus"></i> Create New Project
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="premium-lab-additions" class="premium-feature-container"></div>
+        </div>
+
+
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- POPUP DETAILS MODALS -->
+  <div class="modal-overlay" id="info-modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header">
+        <div class="modal-header-icon" id="modal-icon">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <h3 id="modal-title">Feature Title</h3>
+      </div>
+      <div class="modal-body" id="modal-body-content">
+        <!-- Details inside populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- USER PROFILE MODAL -->
+  <div class="modal-overlay" id="profile-edit-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+    <div class="modal-content" style="background: rgba(18, 18, 24, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 400px; padding: 24px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative;">
+      <button class="modal-close-btn" id="profile-modal-close-btn" style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem;"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header" style="text-align: center; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; gap: 4px;">
+        <h3 style="color: #fff; font-size: 1.2rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-user-pen" style="color: var(--color-primary);"></i> Edit User Profile</h3>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;">Customize your platform identity and avatar</p>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Avatar preview & Upload -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 8px;">
+          <div class="avatar-container" style="position: relative; width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 3px solid var(--color-primary); background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+            <img id="modal-profile-preview" src="https://randomuser.me/api/portraits/men/32.jpg" style="width: 100%; height: 100%; object-fit: cover;" alt="Preview">
+            <span id="modal-profile-initials" style="display: none; font-size: 2rem; font-weight: 700; color: #fff;">V</span>
+          </div>
+          <label class="btn-secondary" style="font-size: 0.7rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+            <i class="fa-solid fa-camera"></i> Upload Photo
+            <input type="file" id="modal-profile-upload" accept="image/*" style="display: none;">
+          </label>
+        </div>
+
+        <!-- Name Input -->
+        <div class="playground-form-group">
+          <label style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Display Name</label>
+          <input type="text" id="modal-profile-name" class="premium-input" placeholder="Enter your name" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.85rem;">
+        </div>
+
+        <!-- Email (Read Only) -->
+        <div class="playground-form-group">
+          <label style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Email Address</label>
+          <input type="text" id="modal-profile-email" class="premium-input" readonly value="guest@nexushub.ai" style="width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); padding: 10px; border-radius: 8px; font-size: 0.85rem; cursor: not-allowed;">
+        </div>
+
+        <button type="button" class="btn-primary" id="btn-profile-save" style="width: 100%; justify-content: center; padding: 10px; font-size: 0.85rem; font-weight: 700; border-radius: 8px; margin-top: 8px;">
+          <i class="fa-solid fa-check"></i> Apply Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REALISTIC GOOGLE SIGN IN POPUP MODAL -->
+  <div class="modal-overlay" id="google-oauth-modal">
+    <div class="account-selector-card">
+      <div class="account-selector-header">
+        <img class="google-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+        <h2>Choose an account</h2>
+        <p>to continue to <strong>NexusHub AI</strong></p>
+      </div>
+      
+      <div class="profile-select-list" id="google-accounts-picker">
+        <div class="profile-select-row" data-name="Varaprasad" data-email="varaprasad@gmail.com" data-avatar="https://randomuser.me/api/portraits/men/32.jpg">
+          <img class="profile-select-avatar" src="https://randomuser.me/api/portraits/men/32.jpg" alt="V">
+          <div class="profile-select-info">
+            <div class="profile-select-name">Varaprasad</div>
+            <div class="profile-select-email">varaprasad@gmail.com</div>
+          </div>
+        </div>
+        <div class="profile-select-row" data-name="Alex Mercer" data-email="alex.mercer@gmail.com" data-avatar="https://randomuser.me/api/portraits/men/85.jpg">
+          <img class="profile-select-avatar" src="https://randomuser.me/api/portraits/men/85.jpg" alt="A">
+          <div class="profile-select-info">
+            <div class="profile-select-name">Alex Mercer</div>
+            <div class="profile-select-email">alex.mercer@gmail.com</div>
+          </div>
+        </div>
+        <div class="profile-select-row" data-name="Sarah Connor" data-email="sarah.connor@gmail.com" data-avatar="https://randomuser.me/api/portraits/women/12.jpg">
+          <img class="profile-select-avatar" src="https://randomuser.me/api/portraits/women/12.jpg" alt="S">
+          <div class="profile-select-info">
+            <div class="profile-select-name">Sarah Connor</div>
+            <div class="profile-select-email">sarah.connor@gmail.com</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="profile-select-use-another" id="btn-google-oauth-guest">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Use another account / Guest</span>
+      </div>
+
+      <!-- Guest sign-in input form, hidden initially -->
+      <form class="guest-signin-form" id="oauth-guest-form" style="display: none;">
+        <input type="text" id="guest-input-name" placeholder="Enter Full Name" required>
+        <input type="email" id="guest-input-email" placeholder="Enter Gmail Address" required>
+        <button type="submit" class="btn-guest-submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AGENT CREATOR FORM MODAL -->
+  <div class="modal-overlay" id="agent-creator-modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="modal-close-btn" id="agent-modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header">
+        <div class="modal-header-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--color-primary); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <h3>Create & Deploy Custom Agent</h3>
+      </div>
+      <form id="agent-creator-form" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);">Agent Name</label>
+          <input type="text" id="new-agent-name" placeholder="e.g. Content Writer Agent" required style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);">Role/Objective</label>
+          <input type="text" id="new-agent-role" placeholder="e.g. Write blog drafts and LinkedIn updates" required style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);">Base Capability Category</label>
+          <select id="new-agent-capability" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: #121826; color:#fff; outline:none;">
+            <option value="sales">Sales Bot</option>
+            <option value="support">Support Chat Bot</option>
+            <option value="customer">Customer Care Bot</option>
+            <option value="openlab">Open Innovation Lab</option>
+            <option value="marketing">Marketing & Content</option>
+            <option value="finance">Billing & Bookkeeping</option>
+            <option value="hr">HR Recruiting</option>
+            <option value="analytics">Data Insights</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="font-size:0.75rem; color:var(--text-secondary);">Temperature</label>
+            <input type="number" id="new-agent-temp" min="0" max="1" step="0.1" value="0.7" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none;">
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <label style="font-size:0.75rem; color:var(--text-secondary);">Trigger Pipeline</label>
+            <select id="new-agent-pipeline" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: #121826; color:#fff; outline:none;">
+              <option value="webhook">Webhook call</option>
+              <option value="cron">Every 1 hour</option>
+              <option value="manual">Manual trigger</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 12px; width:100%; justify-content:center;">Deploy Custom Agent</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- WORKFLOW NODE EDIT MODAL -->
+  <div class="modal-overlay" id="workflow-node-modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <button class="modal-close-btn" id="node-modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header">
+        <div class="modal-header-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--color-primary); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          <i class="fa-solid fa-gear"></i>
+        </div>
+        <h3>Edit Node Details</h3>
+      </div>
+      <form id="node-edit-form" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+        <input type="hidden" id="edit-node-id">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);">Node Title</label>
+          <input type="text" id="edit-node-title" required style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);">Node Description</label>
+          <input type="text" id="edit-node-desc" required style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none;">
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top: 8px; width:100%; justify-content:center;">Save Node Settings</button>
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- INTEGRATION CONFIGURATION SETTINGS MODAL -->
+  <div class="modal-overlay" id="integration-credentials-modal">
+    <div class="modal-content" style="max-width: 450px;">
+      <button class="modal-close-btn" id="integration-config-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header">
+        <div class="modal-header-icon" id="integration-modal-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--color-primary); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          <i class="fa-solid fa-plug"></i>
+        </div>
+        <h3 id="integration-modal-title">Setup Connection</h3>
+      </div>
+      <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:8px; line-height:1.4;" id="integration-modal-desc">
+        Connect your external workspace to enable bidirectional automated pipelines.
+      </p>
+      <form id="integration-config-form" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+        <input type="hidden" id="integration-target-id">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);" id="label-integration-url">API Endpoint / Webhook URL</label>
+          <input type="text" id="integration-api-url" placeholder="https://api.example.com/v1/..." required style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none; font-size:0.75rem;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size:0.75rem; color:var(--text-secondary);" id="label-integration-key">Access Token / Secret Key</label>
+          <input type="password" id="integration-api-key" placeholder="••••••••••••••••••••" required style="padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background: rgba(0,0,0,0.2); color:#fff; outline:none; font-size:0.75rem;">
+        </div>
+        <div id="integration-dynamic-fields" style="display:flex; flex-direction:column; gap:12px;"></div>
+        <button type="button" id="btn-integration-test-run" class="btn-secondary" style="margin-top: 4px; width: 100%; justify-content: center; align-items: center; gap: 6px; display: none;"><i class="fa-solid fa-terminal"></i> Run Diagnostic Handshake Test</button>
+        <div id="integration-tester-console" style="display:none; margin-top:12px; background:rgba(0,0,0,0.8); border:1px solid #10b981; border-radius:6px; padding:10px; font-family:'Courier New', monospace; font-size:0.65rem; color:#10b981; max-height:120px; overflow-y:auto; box-sizing:border-box;">
+          <div style="color:#fff; font-weight:700; border-bottom:1px solid rgba(16,185,129,0.3); padding-bottom:4px; margin-bottom:6px;">Diagnostic Webhook Console</div>
+          <div id="integration-tester-logs"></div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="submit" class="btn-primary" style="flex:2; justify-content:center;">Establish Connection</button>
+          <button type="button" id="btn-integration-disconnect" class="btn-secondary" style="flex:1; justify-content:center; color:var(--color-danger); border-color:rgba(239,68,68,0.3);">Disconnect</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DETAILED PLATFORM CAPABILITIES MODAL -->
+  <div class="modal-overlay" id="features-modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="modal-close-btn" id="features-modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header">
+        <div class="modal-header-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--color-primary); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          <i class="fa-solid fa-circle-nodes"></i>
+        </div>
+        <h3>Enterprise Platform Capabilities</h3>
+      </div>
+      <div class="modal-body" style="margin-top: 16px; font-size: 0.76rem; color: var(--text-secondary); line-height: 1.5; display:flex; flex-direction:column; gap:12px;">
+        <p>NexusHub AI deploys a unified core business stack enabling concurrent operational pipelines:</p>
+        <div style="display:flex; flex-direction:column; gap:8px; background:rgba(255,255,255,0.01); border:1px solid var(--border-color); padding:12px; border-radius:8px;">
+          <div style="display:flex; align-items:center; gap:8px; color:#fff; font-weight:600;"><i class="fa-solid fa-square-check" style="color:var(--color-success);"></i> 3D Perspective Workspace Engine</div>
+          <div style="margin-left:22px; font-size:0.7rem; color:var(--text-muted);">Fully GPU-accelerated canvas grids for managing 15 connected system blocks.</div>
+          
+          <div style="display:flex; align-items:center; gap:8px; color:#fff; font-weight:600; margin-top:4px;"><i class="fa-solid fa-square-check" style="color:var(--color-success);"></i> Autonomous Agent Registry</div>
+          <div style="margin-left:22px; font-size:0.7rem; color:var(--text-muted);">Configures, checks, and manages background loops for custom LLM marketing and CRM agents.</div>
+
+          <div style="display:flex; align-items:center; gap:8px; color:#fff; font-weight:600; margin-top:4px;"><i class="fa-solid fa-square-check" style="color:var(--color-success);"></i> Real-Time Vector Search index</div>
+          <div style="margin-left:22px; font-size:0.7rem; color:var(--text-muted);">Indexes uploaded PDF, PPTX, or DOCX documents to enable instant semantic QA.</div>
+
+          <div style="display:flex; align-items:center; gap:8px; color:#fff; font-weight:600; margin-top:4px;"><i class="fa-solid fa-square-check" style="color:var(--color-success);"></i> Google/Firebase OAuth Gateway</div>
+          <div style="margin-left:22px; font-size:0.7rem; color:var(--text-muted);">Secured single sign-on supporting production Firebase settings dynamically.</div>
+        </div>
+        <button type="button" class="btn-primary" style="margin-top:8px; justify-content:center;" onclick="document.getElementById('features-modal-overlay').classList.remove('open');">Close Capabilities Map</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI APP STORE WORKSPACE MODAL -->
+  <div class="modal-overlay" id="plugin-workspace-modal">
+    <div class="modal-content" style="max-width: 600px; width: 90%;">
+      <button class="modal-close-btn" id="plugin-modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-header">
+        <div class="modal-header-icon" id="plugin-modal-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--color-primary); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+          <i class="fa-solid fa-cubes"></i>
+        </div>
+        <h3 id="plugin-modal-title">AI Tool Workspace</h3>
+      </div>
+      <div id="plugin-modal-desc" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px; margin-bottom: 16px; line-height: 1.4;">
+        Configure and run the AI plugin below.
+      </div>
+      
+      <div id="plugin-workspace-inputs" style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Injected dynamically via JS -->
+      </div>
+      
+      <div id="plugin-workspace-actions" style="margin-top: 16px;">
+        <!-- Injected dynamically via JS -->
+      </div>
+      
+      <div id="plugin-workspace-output-container" style="margin-top: 16px; display: none; flex-direction: column; gap: 8px;">
+        <label style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">AI Output</label>
+        <div id="plugin-workspace-output" style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 0.75rem; color: #a7f3d0; font-family: monospace; white-space: pre-wrap; max-height: 200px; overflow-y: auto;">
+          <!-- Injected dynamically via JS -->
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 8px;">
+          <button type="button" class="btn-secondary" id="btn-plugin-copy" style="padding: 6px 12px; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-copy"></i> Copy Output
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Scripts -->
+  <script src="app.js?v=6.0"></script>
+  <script src="workflow.js?v=6.0"></script>
+</body>
+</html>
