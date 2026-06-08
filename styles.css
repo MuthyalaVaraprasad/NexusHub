@@ -2875,6 +2875,15 @@ body.light-theme .visual-wave-canvas {
     grid-template-columns: 1fr !important;
     min-height: auto !important;
   }
+  .chat-workspace-large {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+  .chat-sidebar-large {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
   .kb-workspace-split-new {
     grid-template-columns: 1fr !important;
   }
@@ -2958,6 +2967,12 @@ body.light-theme .visual-wave-canvas {
 @media (max-width: 576px) {
   .command-grid-top {
     grid-template-columns: 1fr !important;
+  }
+  .chat-sidebar-large {
+    grid-template-columns: 1fr !important;
+  }
+  .dashboard-panel {
+    padding: 12px !important;
   }
   .suite-panel-grid {
     grid-template-columns: 1fr !important;

@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function makeNodeDraggable(el) {
     let offsetX = 0, offsetY = 0;
     el.addEventListener('mousedown', dragMouseDown);
+    el.addEventListener('touchstart', dragTouchStart, { passive: false });
 
     function dragMouseDown(e) {
       if (e.target.classList.contains('node-dot')) return; 
@@ -158,11 +159,33 @@ document.addEventListener('DOMContentLoaded', () => {
       document.addEventListener('mousemove', elementDrag);
     }
 
+    function dragTouchStart(e) {
+      if (e.target.classList.contains('node-dot')) return; 
+      e.preventDefault();
+      const touch = e.touches[0];
+      offsetX = touch.clientX - el.offsetLeft;
+      offsetY = touch.clientY - el.offsetTop;
+      
+      document.addEventListener('touchend', closeDragTouch);
+      document.addEventListener('touchmove', elementTouchDrag, { passive: false });
+    }
+
     function elementDrag(e) {
       e.preventDefault();
       let left = e.clientX - offsetX;
       let top = e.clientY - offsetY;
-      
+      moveElement(left, top);
+    }
+
+    function elementTouchDrag(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      let left = touch.clientX - offsetX;
+      let top = touch.clientY - offsetY;
+      moveElement(left, top);
+    }
+
+    function moveElement(left, top) {
       left = Math.max(0, Math.min(board.scrollWidth - el.clientWidth, left));
       top = Math.max(0, Math.min(board.scrollHeight - el.clientHeight, top));
 
@@ -181,6 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeDragElement() {
       document.removeEventListener('mouseup', closeDragElement);
       document.removeEventListener('mousemove', elementDrag);
+    }
+
+    function closeDragTouch() {
+      document.removeEventListener('touchend', closeDragTouch);
+      document.removeEventListener('touchmove', elementTouchDrag);
     }
   }
 
